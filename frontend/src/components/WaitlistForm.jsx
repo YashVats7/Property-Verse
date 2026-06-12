@@ -28,7 +28,7 @@ export default function WaitlistForm({ source = "investor_waitlist", title = "Jo
 
   if (done) {
     return (
-      <div data-testid={`${testIdPrefix}-success`} className="rounded-2xl border border-[#10B981]/30 bg-[#10B981]/5 p-8 text-center">
+      <div data-testid={`${testIdPrefix}-success`} className="rounded-2xl border border-[#10B981]/40 bg-white p-8 text-center">
         <CheckCircle2 className="w-12 h-12 text-[#10B981] mx-auto" />
         <div className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540] mt-4">You're In.</div>
         <p className="text-slate-600 mt-2">Our investor relations team will reach out within 24 hours.</p>

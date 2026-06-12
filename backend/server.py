@@ -179,7 +179,7 @@ async def login(body: LoginRequest, request: Request, response: Response):
     return UserOut(id=uid, name=user.get("name", ""), email=email, role=user.get("role", "investor"))
 
 @api_router.post("/auth/logout")
-async def logout(response: Response, user: dict = Depends(get_current_user)):
+async def logout(response: Response):
     clear_auth_cookies(response)
     return {"ok": True}
 
