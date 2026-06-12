@@ -95,10 +95,10 @@ export function HeroAssetCard() {
           <div className="px-2.5 py-1 rounded-full bg-[#3FB36F]/15 border border-[#3FB36F]/30 text-[#3FB36F] text-[10px] font-semibold uppercase tracking-widest">A-Grade</div>
         </div>
 
-        <div className="mt-5 rounded-2xl bg-white/5 border border-white/10 p-4">
-          <div className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">Asset Value</div>
-          <div className="pv-num text-3xl md:text-4xl font-bold mt-1">₹<CountUp end={80} />Cr</div>
-          <div className="mt-3 h-20">
+          <div className="mt-3 rounded-2xl bg-white/5 border border-white/10 p-4">
+            <div className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">Asset Value</div>
+            <div className="pv-num text-3xl md:text-4xl font-bold mt-1">₹<CountUp end={80} />Cr</div>
+            <div className="mt-3 h-20" style={{ minWidth: 200 }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={[
                 { y: 80 }, { y: 84 }, { y: 89 }, { y: 95 }, { y: 102 }, { y: 110 }, { y: 119 },

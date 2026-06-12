@@ -511,14 +511,11 @@ async def on_startup():
             "watchlist": ["opp-blr-grade-a", "opp-leverage-alpha"],
         })
     else:
-        # Refresh demo watchlist to current sample opportunity IDs
-        valid_ids = {o["id"] for o in SAMPLE_OPPORTUNITIES}
-        current = set(existing_test.get("watchlist", []))
-        if not (current & valid_ids):
-            await db.users.update_one(
-                {"_id": existing_test["_id"]},
-                {"$set": {"watchlist": ["opp-blr-grade-a", "opp-leverage-alpha"]}},
-            )
+        # Always align demo investor watchlist to the curated v2 selection
+        await db.users.update_one(
+            {"_id": existing_test["_id"]},
+            {"$set": {"watchlist": ["opp-blr-grade-a", "opp-leverage-alpha"]}},
+        )
     logger.info("Startup complete. Admin + test investor seeded.")
 
 @app.on_event("shutdown")

@@ -43,3 +43,29 @@ Premium fintech + real estate website for Property Verse — India's fractional 
 - Soft-commitment workflow (non-transactional)
 - Investor relations chat / WhatsApp integration
 - Multi-language (EN/HI)
+
+## v2 — Major UI/Animation Overhaul (Dec 12, 2025)
+Triggered by user request: "make it world-class, hyper visuals, full animations, use Property Verse logo + bank logos like Kotak/ICICI."
+
+**Added**:
+- Custom Property Verse SVG Logo (building + house + window pixels in brand blue/green)
+- framer-motion + recharts integrated
+- Updated brand palette: brand blue #1E63D5, brand green #3FB36F, navy #0A2540
+- Clash Display + Tanker fonts added (alongside Cabinet Grotesk + Satoshi)
+- LogoCard component: 12 platform brand cards (hBits, Strata, PropShare, Assetmonk, Bhive Alts, Ryzer, ALT DRX, Assetkart, Grip Invest, Jiraaf, Wint Wealth, Property Share) + 8 bank brand cards (ICICI, Kotak, HDFC, Axis, SBI, IDFC First, Yes Bank, Federal) as typographic placeholders
+- Hero: animated cash-flow dashed lines, floating Investor Capital/Bank Debt/Rental Yield badges, area-chart asset value with CountUp counters
+- 6-step Investment Walkthrough: interactive stage with 1000-block fractional grid, rent flow blocks, dashboard tiles, exit bar chart, total-return waterfall
+- Return Simulator: 4 sliders + leverage toggle + live recharts LineChart + Effective IRR computation
+- Cash Flow Waterfall: 5-step animated reveal showing ₹100 rent distribution
+- Exit Waterfall built into LeveragePage existing calculator
+- Asset Intelligence Engine: 6 circular progress score cards + Overall 87/100 institutional score
+- India Map with 6 clickable hotspots (Mumbai/Pune/Bengaluru/Chennai/Hyderabad/NCR)
+- Premium Investor Dashboard Mockup with sidebar nav + KPI cards + area chart
+- Footer compliance/risk disclosure block (full investor-grade language)
+
+**Backend**:
+- 8 new SAMPLE_OPPORTUNITIES matching user spec (Bengaluru ₹80Cr, Pune ₹55Cr, Hyderabad ₹120Cr, NCR ₹95Cr + 4 more) with leverage_available + asset_value_cr + target_irr_range + risk_score fields
+- Idempotent logout
+- Forced demo watchlist alignment to v2 IDs
+
+**Tests**: 20/20 backend pytest pass; full frontend E2E pass.
