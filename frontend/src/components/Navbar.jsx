@@ -59,6 +59,15 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-3">
           {user && user !== false ? (
             <>
+              {user.role === "admin" && (
+                <Link
+                  to="/admin"
+                  data-testid="nav-admin-link"
+                  className="px-4 py-2 rounded-full text-sm font-medium text-[#1E63D5] hover:bg-slate-100"
+                >
+                  Admin
+                </Link>
+              )}
               <Link
                 to="/dashboard"
                 data-testid="nav-dashboard-link"
@@ -123,6 +132,9 @@ export default function Navbar() {
             <div className="h-px bg-slate-200 my-2" />
             {user && user !== false ? (
               <>
+                {user.role === "admin" && (
+                  <Link to="/admin" data-testid="mobile-nav-admin-link" className="px-4 py-3 rounded-xl text-sm font-medium text-[#1E63D5]">Admin</Link>
+                )}
                 <Link to="/dashboard" className="px-4 py-3 rounded-xl text-sm font-medium text-[#0A2540]">Dashboard</Link>
                 <button onClick={logout} data-testid="mobile-nav-logout-btn" className="px-4 py-3 rounded-xl text-sm font-semibold bg-[#0A2540] text-white">
                   Sign Out

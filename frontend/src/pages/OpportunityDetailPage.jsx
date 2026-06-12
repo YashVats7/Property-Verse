@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { MapPin, ArrowLeft, Bookmark, Building2, Calendar, Users, TrendingUp, ShieldCheck } from "lucide-react";
 import api from "../lib/api";
 import { useAuth } from "../lib/auth";
@@ -44,8 +45,16 @@ export default function OpportunityDetailPage() {
       </Link>
       <div className="grid lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2">
-          <div className="rounded-3xl overflow-hidden relative h-[360px] md:h-[440px]">
-            <img src={o.image} alt={o.name} className="w-full h-full object-cover" />
+          <div className="rounded-3xl overflow-hidden relative h-[360px] md:h-[480px] bg-slate-100">
+            <motion.img
+              src={o.image}
+              alt={o.name}
+              className="w-full h-full object-cover"
+              onError={(e) => { if (o.image_fallback) e.currentTarget.src = o.image_fallback; }}
+              initial={{ scale: 1.15 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.4, ease: "easeOut" }}
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0A2540]/80 via-transparent to-transparent" />
             <div className="absolute top-5 left-5 flex gap-2 flex-wrap">
               {o.tags?.map((t) => (

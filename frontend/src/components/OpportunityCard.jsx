@@ -1,37 +1,47 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { MapPin, Building2, Users, Banknote, ShieldCheck } from "lucide-react";
 import { inr } from "../lib/format";
 
 export default function OpportunityCard({ o, testIdPrefix = "opp-card" }) {
+  const [imgErr, setImgErr] = useState(false);
+  const src = imgErr && o.image_fallback ? o.image_fallback : o.image;
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
+      viewport={{ once: true, margin: "-60px" }}
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.5, type: "spring", stiffness: 120, damping: 18 }}
     >
       <Link
         to={`/opportunities/${o.id}`}
         data-testid={`${testIdPrefix}-${o.id}`}
         className="pv-card overflow-hidden flex flex-col group h-full"
       >
-        <div className="relative h-52 overflow-hidden">
-          <img
-            src={o.image}
+        <div className="relative h-56 overflow-hidden bg-slate-100">
+          <motion.img
+            src={src}
             alt={o.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            className="w-full h-full object-cover"
             loading="lazy"
+            onError={() => setImgErr(true)}
+            initial={{ scale: 1.15 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true }}
+            whileHover={{ scale: 1.08 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A2540]/85 via-[#0A2540]/20 to-transparent" />
           <div className="absolute top-4 left-4 right-4 flex flex-wrap gap-2">
             {o.leverage_available && (
-              <span className="px-2.5 py-1 rounded-full bg-gradient-to-r from-[#3FB36F] to-[#1E63D5] text-white text-[10px] uppercase tracking-wider font-bold inline-flex items-center gap-1">
+              <span className="px-2.5 py-1 rounded-full bg-gradient-to-r from-[#3FB36F] to-[#1E63D5] text-white text-[10px] uppercase tracking-wider font-bold inline-flex items-center gap-1 shadow-lg">
                 <Banknote className="w-3 h-3" /> Leverage
               </span>
             )}
             {(o.tags || []).slice(0, 2).map((t) => (
-              <span key={t} className="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur text-[10px] uppercase tracking-wider font-semibold text-[#0A2540]">{t}</span>
+              <span key={t} className="px-2.5 py-1 rounded-full bg-white/95 backdrop-blur text-[10px] uppercase tracking-wider font-semibold text-[#0A2540]">{t}</span>
             ))}
           </div>
           <div className="absolute bottom-4 left-4 right-4 text-white">
@@ -69,7 +79,13 @@ export default function OpportunityCard({ o, testIdPrefix = "opp-card" }) {
               <span className="pv-num font-semibold text-[#0A2540]">{o.funded_pct}%</span>
             </div>
             <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
-              <div className="h-full rounded-full bg-gradient-to-r from-[#1E63D5] to-[#3FB36F]" style={{ width: `${o.funded_pct}%` }} />
+              <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: `${o.funded_pct}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+                className="h-full rounded-full bg-gradient-to-r from-[#1E63D5] to-[#3FB36F]"
+              />
             </div>
           </div>
         </div>

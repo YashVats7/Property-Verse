@@ -95,6 +95,8 @@ h1, h2, h3, h4, h5, h6 {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: pv-shimmer 6s linear infinite;
+  padding-bottom: 0.12em;
+  display: inline-block;
 }
 @keyframes pv-shimmer {
   to { background-position: -200% 0; }

@@ -14,6 +14,7 @@ import ContactPage from "./pages/ContactPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import DashboardPage from "./pages/DashboardPage";
+import AdminPage from "./pages/AdminPage";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -58,6 +59,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Shell><DashboardPage /></Shell>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Shell><AdminPage /></Shell>
               </ProtectedRoute>
             }
           />

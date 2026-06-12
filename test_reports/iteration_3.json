@@ -1,0 +1,46 @@
+{
+  "summary": "Iteration-3 full-stack regression for Property Verse v3 (admin console + AI hero images + PNG logo + 3-line hero). Backend: 31/31 pytest pass against public REACT_APP_BACKEND_URL — added 8 new admin tests (stats, leads list for waitlist/partners/strategy-calls, users without password_hash, delete waitlist lead, unknown collection rejected, 401 unauthenticated, 403 for investor) + demo watchlist forced alignment to ['opp-blr-grade-a','opp-leverage-alpha'] (now passes — seed.py force-updates on every startup) + HEAD checks on all 8 /generated/assets/opp-*.png static files. Frontend: hero h1 broken across 3 lines ('Real Estate', 'Investing,', 'Upgraded.') with .pv-text-shimmer span present, Property Verse PNG logo (/brand/property-verse-logo.png) rendered, 8 bank Simple Icons CDN imgs loaded, generated/assets/opp-*.png images render on homepage and marketplace, Admin login → nav-admin-link visible → /admin loads with admin-page testid, KPI cards show non-null counts (Waitlist 7, Partners 5, Strategy Calls 5, Investors 11, Total Users 12), all 4 tabs switch tables correctly, admin-search-input + admin-export-csv present, investor login does NOT show admin link, unauthenticated /admin → /login, investor /admin → home (frontend guard).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/admin/leads/{collection}/{lead_id} DELETE", "issue": "Returns {ok: false} (HTTP 200) when lead_id is a UUID string fallback path with no match (instead of 404). Current behaviour: ObjectId parse fails → falls back to {id: lead_id} match → if no doc, delete_one returns 0 but endpoint still returns ok:true. Not blocking; consider returning 404 when nothing was deleted for idempotency clarity."},
+      {"endpoint": "CORS allow_origins", "issue": "Hard-coded to single FRONTEND_URL env. If multiple origins are needed (e.g., custom domain + preview), this will break. OK for MVP."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "HomePage (Recharts containers — simulator / waterfall)", "issues": ["Repeated 'width(-1)/height(-1) of chart should be greater than 0' Recharts warnings still emitted on first paint. Carry-over from iteration_2. Charts render correctly on scroll; only console noise."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional) Tighten DELETE /api/admin/leads/{collection}/{lead_id} to return 404 when no row was deleted in the UUID-fallback branch (currently returns {ok:true} silently).",
+    "(Optional, carry-over from iter_2) Reduce Recharts width(-1) warnings by setting explicit aspect / minWidth on ResponsiveContainer or by deferring chart mount until in-view.",
+    "(Optional, carry-over from iter_2) Seed startup should upsert admin/test passwords from env vars when changed (currently only updates demo investor watchlist; password drift not propagated)."
+  ],
+  "critical_code_review_comments": [
+    "server.py is now a clean ~60-line entrypoint after refactor — nice. Routers properly mounted under /api prefix.",
+    "app/security.py: require_admin reads user.role and returns 403 — correct guard. get_current_user supports both cookie and Bearer header — good.",
+    "app/seed.py: demo investor watchlist is now FORCE-updated on every startup to ['opp-blr-grade-a','opp-leverage-alpha'] (fixes iter_2 finding). Admin user only inserted-if-missing — password drift remains.",
+    "app/routers/admin.py: _serialize correctly strips _id and password_hash. count_documents is async/awaited. AsyncIO motor `async for` cursor usage is correct.",
+    "DELETE /api/admin/leads/{collection}/{lead_id}: when ObjectId parse fails, falls through to {id: lead_id} match and returns {ok:true} regardless of deleted_count. Should return 404 on no-op for symmetric REST semantics (minor).",
+    "Frontend AdminPage.jsx uses data-testid on all interactive elements (tabs, search, export, page wrapper). Good for E2E.",
+    "Frontend route guard for /admin correctly redirects unauthenticated → /login and investor → / (defense-in-depth on top of backend 403).",
+    "OpportunityCard image now uses /generated/assets/opp-*.png with onError → image_fallback (Unsplash) — verified HEAD 200 on all 8 PNGs in pytest."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "Admin admin@propertyverse.in / PropVerseAdmin2025! and demo investor investor@propertyverse.in / Investor2025! verified via /api/auth/login and full UI flow.",
+  "seed_data_creation": "pytest created TEST_-prefixed waitlist/partner/strategy-call leads + fresh signup users (test_signup_*, test_wl_*, TEST_admin_del_*). Admin delete test removes its own freshly-created waitlist lead. No production data mutated.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Pytest baseline at /app/backend/tests/backend_test.py — 31/31 passing. New admin endpoints fully covered (5 GETs + 1 DELETE + 401/403 guards). Demo investor watchlist is now forced to ['opp-blr-grade-a','opp-leverage-alpha'] on every server startup (seed.py update_one is unconditional for existing demo). Admin login Sign-In button does not have type='submit' — use page.get_by_role('button', name='Sign In').click() OR text-selector instead of button[type=submit]. nav-admin-link testid is rendered only for admin role; investor sees nav-dashboard-link + sign-out. /admin frontend guard redirects unauth → /login and non-admin → /. Static images at /generated/assets/opp-*.png all return 200 (HEAD-checked in pytest).",
+  "rca_of_the_issue": "No blocker bugs. Minor: DELETE /api/admin/leads/{collection}/{lead_id} returns ok:true even when no row matched in the UUID-fallback path (line 78-79 of admin.py): `await coll.delete_one({'id': lead_id}); return {'ok': True}` — the early-return ignores delete_count. Repro: DELETE /api/admin/leads/waitlist/some-fake-uuid → 200 {ok:true} though nothing was deleted. Fix: capture res = await coll.delete_one({'id': lead_id}); return {'ok': res.deleted_count > 0} or raise 404 when zero."
+}

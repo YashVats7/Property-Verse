@@ -52,8 +52,10 @@ export default function HomePage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#3FB36F] pv-pulse-dot" />
                 India's Real Estate Investment Layer
               </div>
-              <h1 className="font-['Clash_Display'] text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tighter mt-6 pb-1">
-                Real Estate Investing, <br className="hidden md:block" /><span className="pv-text-shimmer">Upgraded.</span>
+              <h1 className="font-['Clash_Display'] text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.05] tracking-[-0.03em] mt-6 pb-3">
+                <span className="block">Real Estate</span>
+                <span className="block">Investing,</span>
+                <span className="block pv-text-shimmer pb-1">Upgraded.</span>
               </h1>
               <p className="text-base md:text-lg text-slate-300 mt-6 max-w-xl leading-relaxed">
                 Discover curated fractional real estate opportunities and access upcoming leverage-backed investment products in A-grade pre-leased commercial real estate.

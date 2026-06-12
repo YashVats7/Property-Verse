@@ -276,3 +276,129 @@ def test_dashboard_watchlist_crud():
     d3 = s.get(f"{API}/dashboard").json()
     ids2 = {o["id"] for o in d3["watchlist"]}
     assert "opp-bkc-skyline" not in ids2
+
+
+# ---------- Admin Endpoints ----------
+@pytest.fixture(scope="module")
+def admin_session():
+    s = requests.Session()
+    s.headers.update({"Content-Type": "application/json"})
+    r = s.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
+    assert r.status_code == 200, f"Admin login failed: {r.status_code} {r.text}"
+    assert r.json().get("role") == "admin"
+    return s
+
+
+def test_admin_stats(admin_session):
+    r = admin_session.get(f"{API}/admin/stats")
+    assert r.status_code == 200, r.text
+    data = r.json()
+    for k in ("waitlist", "partners", "strategy_calls", "users", "investors"):
+        assert k in data
+        assert isinstance(data[k], int)
+
+
+def test_admin_waitlist_list(admin_session):
+    r = admin_session.get(f"{API}/admin/leads/waitlist")
+    assert r.status_code == 200
+    data = r.json()
+    assert "items" in data and isinstance(data["items"], list)
+
+
+def test_admin_partners_list(admin_session):
+    r = admin_session.get(f"{API}/admin/leads/partners")
+    assert r.status_code == 200
+    assert isinstance(r.json().get("items"), list)
+
+
+def test_admin_strategy_calls_list(admin_session):
+    r = admin_session.get(f"{API}/admin/leads/strategy-calls")
+    assert r.status_code == 200
+    assert isinstance(r.json().get("items"), list)
+
+
+def test_admin_users_list_no_password_hash(admin_session):
+    r = admin_session.get(f"{API}/admin/users")
+    assert r.status_code == 200
+    items = r.json().get("items")
+    assert isinstance(items, list)
+    assert len(items) >= 2
+    for u in items:
+        assert "password_hash" not in u, "password_hash leaked in /admin/users response"
+        assert "_id" not in u
+        assert "id" in u
+        assert "email" in u
+
+
+def test_admin_delete_waitlist_lead(admin_session, client):
+    # Create a waitlist lead first
+    email = f"TEST_admin_del_{uuid.uuid4().hex[:8]}@example.com"
+    payload = {
+        "name": "TEST_AdminDelete",
+        "email": email,
+        "phone": "+918888888888",
+        "investment_range": "25L-1Cr",
+        "source": "investor_waitlist",
+    }
+    r = client.post(f"{API}/waitlist", json=payload)
+    assert r.status_code == 200
+    lead_id = r.json().get("id")
+    assert lead_id
+
+    # Confirm it's listed
+    lst = admin_session.get(f"{API}/admin/leads/waitlist?limit=500").json()["items"]
+    found = next((x for x in lst if x.get("email") == email), None)
+    assert found is not None, "Newly created waitlist lead not visible to admin"
+
+    # Delete (use returned id which may be uuid string OR mongo _id)
+    target_id = found.get("id", lead_id)
+    r = admin_session.delete(f"{API}/admin/leads/waitlist/{target_id}")
+    assert r.status_code == 200
+    assert r.json().get("ok") in (True, False)  # True for mongo _id path
+
+    # Verify gone
+    lst2 = admin_session.get(f"{API}/admin/leads/waitlist?limit=500").json()["items"]
+    found2 = next((x for x in lst2 if x.get("email") == email), None)
+    assert found2 is None, "Waitlist lead still present after delete"
+
+
+def test_admin_delete_unknown_collection(admin_session):
+    r = admin_session.delete(f"{API}/admin/leads/unknown-coll/abc123")
+    assert r.status_code == 400
+
+
+# ---------- Admin auth guard ----------
+def test_admin_endpoints_require_auth():
+    s = requests.Session()
+    for path in ["/admin/stats", "/admin/leads/waitlist", "/admin/leads/partners",
+                 "/admin/leads/strategy-calls", "/admin/users"]:
+        r = s.get(f"{API}{path}")
+        assert r.status_code == 401, f"{path} should be 401 unauth, got {r.status_code}"
+
+
+def test_admin_endpoints_forbid_investor(demo_session):
+    for path in ["/admin/stats", "/admin/leads/waitlist", "/admin/leads/partners",
+                 "/admin/leads/strategy-calls", "/admin/users"]:
+        r = demo_session.get(f"{API}{path}")
+        assert r.status_code == 403, f"{path} should be 403 for investor, got {r.status_code}"
+
+
+# ---------- Demo investor watchlist forced alignment ----------
+def test_demo_watchlist_forced_alignment(demo_session):
+    """v3: demo investor watchlist should be FORCED to opp-blr-grade-a + opp-leverage-alpha on startup."""
+    r = demo_session.get(f"{API}/dashboard")
+    assert r.status_code == 200
+    wl_ids = {o["id"] for o in r.json()["watchlist"]}
+    # Note: this test runs after test_dashboard_watchlist_crud which uses a different user,
+    # so demo watchlist should still match the seeded values
+    assert wl_ids == {"opp-blr-grade-a", "opp-leverage-alpha"}, (
+        f"Demo watchlist mismatch: {wl_ids}"
+    )
+
+
+# ---------- Static asset presence ----------
+def test_generated_assets_present(client):
+    for oid in SAMPLE_IDS:
+        url = f"{BASE_URL}/generated/assets/{oid}.png"
+        r = client.head(url, allow_redirects=True)
+        assert r.status_code == 200, f"{url} returned {r.status_code}"
