@@ -1,0 +1,43 @@
+{
+  "summary": "First-iteration full-stack testing of Property Verse. Backend: 17/17 pytest cases passed against public URL covering opportunities, stats, lead capture (waitlist/partner/strategy-call), auth (register, login, /me, logout, refresh paths) and dashboard watchlist CRUD. Frontend: Homepage, Opportunities (8 cards + filters), Opportunity detail (BKC), Leverage page (calculator + waitlist), Login, Signup, Dashboard (watchlist remove + recommendations), Logout, Auth-guard redirect, Contact strategy-call form, Partners + Lender forms — all flows pass end-to-end with correct success/redirect states.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/auth/logout", "issue": "Endpoint requires authentication via Depends(get_current_user). If the access cookie is already missing/expired the client gets 401 from logout instead of an idempotent 200; recommend making logout idempotent and always clearing cookies."},
+      {"endpoint": "startup seed_admin", "issue": "Admin/test investor are only inserted when missing; password changes in .env are NOT propagated to existing users. Per auth playbook, seed should upsert and update password_hash if ADMIN_PASSWORD changes."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "LeveragePage – Early Access section", "issues": ["The success-state heading 'You're in.' renders in a dark slate color on a navy gradient background, giving very low contrast. Brighten text (e.g. text-white/90) inside the dark hero waitlist card."]}
+    ],
+    "spec_vs_impl_naming_mismatches": [
+      "Spec lists data-testid 'nav-link-leverage' but actual is 'nav-link-leverage-product' (derived from label 'Leverage Product').",
+      "Spec lists 'lfa-waitlist-name/email/phone/range/submit' but WaitlistForm renders 'lfa-waitlist-input-name', 'lfa-waitlist-input-email', 'lfa-waitlist-input-phone', 'lfa-waitlist-select-range', 'lfa-waitlist-submit-btn'. Functionality OK; recommend aligning naming in the spec OR exposing aliases."
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Make POST /api/auth/logout idempotent (do not require auth dependency; always clear cookies and return 200).",
+    "Update startup seed to upsert admin/test investor password when ADMIN_PASSWORD / TEST_USER_PASSWORD env values change.",
+    "Improve contrast of the 'You're in.' success copy inside the dark LFA waitlist card on /leverage.",
+    "Optionally align data-testid naming between the implementation and the spec/checklist so QA scripts referencing the spec's IDs (lfa-waitlist-name, nav-link-leverage) work without translation."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 486 lines and mixes models, auth helpers, route handlers and seed logic — consider splitting into routers/auth.py, routers/opportunities.py, routers/dashboard.py, models.py, seed.py before growth.",
+    "SAMPLE_OPPORTUNITIES is in-memory; opportunity edits/admin tooling will not persist. Acceptable for MVP but note it.",
+    "CORS middleware uses only FRONTEND_URL; CORS_ORIGINS env var in backend/.env is unused — either remove the unused env or honor it.",
+    "Login brute force lockout is per (client_host:email) — behind ingress all hosts may collapse to a single IP. Acceptable for MVP, but could lock out shared NATs.",
+    "verify_password swallows all exceptions returning False — fine, but ensure bcrypt hash format ($2b$) is asserted at startup for seeded users (already true via bcrypt.gensalt())."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py", "/app/backend/tests/__init__.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "investor@propertyverse.in / Investor2025! ; admin@propertyverse.in / PropVerseAdmin2025! (both verified working via /api/auth/login).",
+  "seed_data_creation": "Used existing seeded demo investor (2 pre-seeded watchlist items: opp-bkc-skyline, opp-orr-prism) and seeded admin. Created several TEST_ prefixed lead-capture records (waitlist/partner/strategy-call) and a couple of fresh signup users (test_signup_*@example.com, test_wl_*@example.com). Removed opp-bkc-skyline from demo watchlist during UI test then re-added it via the dashboard API to restore the original 2-item demo state.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest at /app/backend/tests/backend_test.py runs cleanly against REACT_APP_BACKEND_URL. The demo investor watchlist is restored to its original 2 items at end of this run. Note the actual data-testids on the leverage waitlist form are lfa-waitlist-input-{name|email|phone}, lfa-waitlist-select-range, lfa-waitlist-submit-btn (NOT the shorter names mentioned in the spec). Nav link for Leverage Product has testid nav-link-leverage-product. All forms post successfully; no mocked APIs.",
+  "rca_of_the_issue": "No blocker issues. Two minor backend concerns (logout idempotency + seed password drift) and one minor UI contrast issue documented under action_items. Spec-vs-implementation testid naming mismatches are cosmetic — all elements exist and work."
+}
