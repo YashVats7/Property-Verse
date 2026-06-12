@@ -1,0 +1,113 @@
+{
+  "brand_name": "Property Verse",
+  "theme": "light",
+  "archetype": "Archetype 4 (Swiss & High-Contrast) + Archetype 5 (Luxury Tech)",
+  "positioning": "Premium, modern, responsive real estate fintech platform for fractional real estate investments and leverage-backed products. Mix of Stripe, Zerodha, Blackstone.",
+  "colors": {
+    "background": "#FFFFFF",
+    "surface": "#F8FAFC",
+    "surface_glass": "rgba(255, 255, 255, 0.75)",
+    "primary": "#0A2540",
+    "primary_light": "#0F3860",
+    "secondary": "#10B981",
+    "secondary_dark": "#059669",
+    "text_main": "#0F172A",
+    "text_muted": "#64748B",
+    "border": "#E2E8F0",
+    "hero_gradient": "bg-gradient-to-br from-[#0A2540] via-[#0F3860] to-[#10B981]/20"
+  },
+  "typography": {
+    "font_families": {
+      "headings": "Cabinet Grotesk, sans-serif",
+      "body": "Satoshi, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "guidelines": {
+      "h1": "text-5xl md:text-6xl font-bold tracking-tighter text-[#0A2540]",
+      "h2": "text-3xl md:text-4xl font-bold tracking-tight text-[#0A2540]",
+      "h3": "text-xl md:text-2xl font-semibold tracking-tight",
+      "body": "text-base md:text-lg leading-relaxed text-[#64748B]",
+      "numbers": "tabular-nums font-medium tracking-tight text-[#0A2540]"
+    }
+  },
+  "layout_and_spacing": {
+    "container": "max-w-7xl mx-auto px-6 md:px-12",
+    "section_padding": "py-20 md:py-32",
+    "card_radius": "rounded-2xl",
+    "button_radius": "rounded-full",
+    "shadows": {
+      "soft": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+      "hover": "hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)]",
+      "glass": "backdrop-blur-xl border border-white/40"
+    }
+  },
+  "pages_and_sections": [
+    {
+      "name": "Home",
+      "sections": [
+        "Hero: Navy to Emerald subtle gradient background. Large value prop. CTAs: 'Explore Opportunities' (Primary Green), 'Join Waitlist' (Secondary White Outline). Visual: 3D real estate isometric visual.",
+        "Trust Bar: Minimalist logos of Bank/NBFC partners, combined with AUM & investor stats (e.g., '10B+ Managed', '15k+ Investors').",
+        "How Fractional Works: Visual bento-box flow or step-by-step pipeline showing sourcing, fractioning, investing, and yielding.",
+        "Opportunities Preview: 3-4 premium glassmorphism property cards (Yield, IRR, Min Investment, Occupancy). CTA to 'Browse All'.",
+        "Leverage Product Teaser: High-contrast dark section explaining the upcoming leverage-based investment structure.",
+        "Footer: Comprehensive regulatory, compliance text, and deep links."
+      ]
+    },
+    {
+      "name": "Opportunities",
+      "sections": [
+        "Header: Clean filter controls (Location, Asset Type, Target IRR).",
+        "Grid: 6-8 sample property cards using a bento or masonry grid approach.",
+        "Property Cards: High-quality building image, tags (A-Grade, Leased), metrics (Yield, IRR), progress bar (Funding Status)."
+      ]
+    },
+    {
+      "name": "Leverage Product",
+      "sections": [
+        "Explainer: Visual breakdowns showing base yield vs. leveraged yield.",
+        "Waitlist Form: High-conversion 'Get Early Access' card with email input."
+      ]
+    },
+    {
+      "name": "About & Partners",
+      "sections": [
+        "Mission: 'Real Estate Investing, Upgraded.' text pattern.",
+        "Team/Contact: Strategy call booking CTA and Partner With Us form."
+      ]
+    },
+    {
+      "name": "Investor Dashboard",
+      "sections": [
+        "Auth: Clean Login/Signup JWT flow.",
+        "Overview: Portfolio value, active investments, available balance.",
+        "Watchlist: Saved opportunities table with tabular-nums."
+      ]
+    }
+  ],
+  "image_prompts_nano_banana": {
+    "hero_building_shot": "A sleek, cinematic, 3D isometric mockup of an A-grade commercial office building resting on a floating glass platform. The building is highly modern, featuring sheer glass facades reflecting a soft sunset, surrounded by glowing data lines and financial charts circling the base. Shot with a premium, hyper-realistic, luxury tech aesthetic, dark navy and emerald green ambient lighting.",
+    "dashboard_mockup": "A futuristic, clean financial dashboard interface floating in 3D space, showing high-yield real estate investment charts, portfolio value, and IRR metrics. Soft glassmorphism UI elements, deep navy blue and emerald green accents, high-end wealth management platform look.",
+    "fractional_ownership_illustration": "An abstract, premium 3D illustration showing a large commercial skyscraper being divided into glowing, golden puzzle pieces or fractional cubes, representing fractional ownership. Clean white and light gray background, luxury fintech styling, soft ambient occlusion shadows.",
+    "leverage_product_visual": "A stylized 3D visualization showing a stack of investment blocks being multiplied by a glowing green lever or magnifying glass. Represents financial leverage in real estate. Minimalist, premium, corporate aesthetic.",
+    "partner_trust_visual": "A sleek, high-contrast composition showing a golden handshake or a stylized institutional shield merging with a modern building, representing secure partnerships and trust in commercial real estate."
+  },
+  "media_urls": {
+    "office_buildings": [
+      "https://images.unsplash.com/photo-1600531529272-023c4b821f14?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBBLWdyYWRlJTIwY29tbWVyY2lhbCUyMG9mZmljZSUyMGJ1aWxkaW5nJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzgxMjczNjg0fDA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1576731753569-3e93a228048c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBBLWdyYWRlJTIwY29tbWVyY2lhbCUyMG9mZmljZSUyMGJ1aWxkaW5nJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzgxMjczNjg0fDA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1549757521-4160565ff3de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHwzfHxtb2Rlcm4lMjBBLWdyYWRlJTIwY29tbWVyY2lhbCUyMG9mZmljZSUyMGJ1aWxkaW5nJTIwZXh0ZXJpb3J8ZW58MHx8fHwxNzgxMjczNjg0fDA&ixlib=rb-4.1.0&q=85"
+    ],
+    "business_meetings": [
+      "https://images.unsplash.com/photo-1624555130581-1d9cca783bc0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBidXNpbmVzcyUyMG1lZXRpbmclMjBzdHJhdGVneXxlbnwwfHx8fDE3ODEyNzM2ODR8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwyfHxwcm9mZXNzaW9uYWwlMjBidXNpbmVzcyUyMG1lZXRpbmclMjBzdHJhdGVneXxlbnwwfHx8fDE3ODEyNzM2ODR8MA&ixlib=rb-4.1.0&q=85"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Use Phosphor Icons (e.g., Bank, ShieldCheck, ChartLineUp) as abstract trust/partner logos instead of generic image placeholders.",
+    "Ensure 'Cabinet Grotesk' is loaded for headings and 'Satoshi' for body. Use next/font or standard import.",
+    "Enforce the 'Plain-Money' design pattern in text. Show literal sums (e.g., '14.5% IRR', '₹25,00,000 Min') visibly.",
+    "Implement the 'data-testid' attribute on ALL interactive elements (buttons, forms, links, dashboard tabs) using kebab-case role-based names.",
+    "For the Hero section, utilize the defined 'hero_gradient'. Make it feel premium, like a Stripe/Blackstone crossover.",
+    "Property cards should use standard image URLs from 'media_urls.office_buildings' but the AI-generated images mentioned in 'image_prompts_nano_banana' should be visually indicated by a sophisticated placeholder or implemented if the Nano Banana tool is connected."
+  ]
+}
