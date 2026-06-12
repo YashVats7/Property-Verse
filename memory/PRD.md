@@ -122,3 +122,24 @@ Per user request: "background visuals everywhere, dynamic moving, exciting to vi
 **Marketplace page**: untouched per user request.
 
 **Polish**: LogoCard now has Simple Icons CDN onError fallback (graceful broken-image handling); ticker opacity dialed down for dark backgrounds to keep headlines readable.
+
+## v5 — Dynamic Image Simulations (replacing v4 floaters) (Dec 12, 2025)
+User feedback: v4 floaters (random tickers, matrix digits, particle dots) felt like "gibberish". Replaced with content-relevant, meaningful animated visuals where the imagery itself simulates the concept.
+
+**Removed**: All ticker/matrix/particles/rings/blocks/mesh/waveform/blobs/flow/grid noise overlays from HomePage and LeveragePage.
+
+**Added — `Visuals.jsx` component with 5 dynamic visualizations**:
+- `CityRentFlow` — animated SVG cityscape with pulsing windows, anchor buildings glowing green, rent (green dots) flowing along the base, dashed flow lines from anchor buildings to a "YOU" wallet at top right
+- `FractionalSimulation` — animated SVG of a building with 28 ownership blocks orbiting around it; your fraction lights up in green with a glow drop-shadow
+- `LeverageStack` — animated SVG showing ₹40L equity (single block) vs ₹20L equity + ₹20L debt stacking into ₹40L exposure with an `EFFECTIVE 2×` multiplier badge appearing
+- `CashFlowRiver` — vertical waterfall: Rent ₹100 → −Opex ₹8 → −Interest ₹22 → −Reserve ₹5 → Investor ₹65, with pulse dots traveling between steps
+- `KenBurns` — slow zoom + drift Ken Burns effect for AI-generated photography
+
+**Applied**:
+- HomePage stats strip: CityRentFlow backdrop
+- HomePage fractional ownership section: FractionalSimulation (replaced static AI image)
+- HomePage cash flow waterfall: CashFlowRiver (replaced CashFlowWaterfall component)
+- HomePage leverage teaser: LeverageStack inserted above the comparison cards
+- LeveragePage hero: CityRentFlow occupying the bottom half
+- LeveragePage comparison section: LeverageStack (replaced static leverage_visual image)
+- Marketplace page untouched per user

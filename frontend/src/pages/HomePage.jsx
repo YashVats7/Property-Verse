@@ -11,7 +11,7 @@ import WaitlistForm from "../components/WaitlistForm";
 import { PLATFORM_BRANDS, BANK_BRANDS, PlatformLogo, BankLogo } from "../components/LogoCard";
 import { HeroAssetCard, ReturnSimulator, CashFlowWaterfall, AssetIntelligence, IndiaMap, DashboardMockup, CountUp } from "../components/Animated";
 import InvestmentWalkthrough from "../components/InvestmentWalkthrough";
-import BackgroundFX from "../components/BackgroundFX";
+import { FractionalSimulation, CityRentFlow, LeverageStack, CashFlowRiver, KenBurns } from "../components/Visuals";
 
 const PILLARS = [
   { icon: Layers, title: "Aggregator Marketplace", desc: "Compare curated fractional real estate opportunities across trusted platforms and asset owners." },
@@ -42,8 +42,7 @@ export default function HomePage() {
       {/* HERO */}
       <section className="relative overflow-hidden pv-hero-gradient pv-grain">
         <div className="absolute inset-0 pv-grid-overlay opacity-60" />
-        <BackgroundFX variant="particles" dark />
-        <BackgroundFX variant="flow" dark />
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 pt-20 pb-28 md:pt-28 md:pb-36">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <motion.div
@@ -101,7 +100,6 @@ export default function HomePage() {
 
       {/* ECOSYSTEM LOGOS */}
       <section className="relative border-y border-slate-200 bg-white overflow-hidden">
-        <BackgroundFX variant="mesh" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 py-12">
           <div className="text-center">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Real Estate Investment Ecosystem</div>
@@ -142,9 +140,9 @@ export default function HomePage() {
       {/* Stats */}
       {stats && (
         <section className="bg-gradient-to-br from-[#0A2540] to-[#0F3FA1] text-white relative overflow-hidden">
-          <div className="absolute inset-0 pv-grid-overlay opacity-30" />
-          <BackgroundFX variant="flow" dark />
-          <BackgroundFX variant="ticker" dark />
+          <CityRentFlow className="absolute inset-0 w-full h-full opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0A2540]/90 via-[#0A2540]/55 to-[#0A2540]/90" />
+
           <div className="relative max-w-7xl mx-auto px-6 md:px-12 py-14 grid grid-cols-2 md:grid-cols-5 gap-8">
             {[
               { v: <>₹<CountUp end={stats.aum_inr_cr} />Cr+</>, l: "Curated AUM" },
@@ -170,8 +168,7 @@ export default function HomePage() {
 
       {/* PILLARS */}
       <section className="relative py-24 md:py-32 overflow-hidden">
-        <BackgroundFX variant="blocks" />
-        <BackgroundFX variant="ticker" />
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">What is Property Verse</div>
@@ -183,12 +180,12 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="mt-12 relative rounded-3xl overflow-hidden border border-slate-200">
-            <img src="/generated/fractional_illustration.png" alt="Fractional ownership" className="w-full h-72 md:h-96 object-cover" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6 md:left-10 md:right-10">
-              <div className="font-['Cabinet_Grotesk'] text-2xl md:text-3xl font-extrabold text-[#0A2540] max-w-xl tracking-tighter">
-                One building. Many fractions. Backed by data, structured for institutions, accessible for you.
+          <div className="mt-12 relative rounded-3xl overflow-hidden border border-slate-200 bg-gradient-to-br from-[#0A2540] via-[#0F3FA1] to-[#0A2540]">
+            <FractionalSimulation className="h-72 md:h-[420px]" />
+            <div className="absolute top-6 left-6 right-6 md:left-10 md:right-10 max-w-xl">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Fractional Ownership</div>
+              <div className="font-['Cabinet_Grotesk'] text-2xl md:text-3xl font-extrabold text-white mt-2 tracking-tighter">
+                One building. 1,000 fractions. Your block lights up.
               </div>
             </div>
           </div>
@@ -222,8 +219,7 @@ export default function HomePage() {
 
       {/* 6-YEAR SIMULATOR */}
       <section className="relative py-24 md:py-32 overflow-hidden">
-        <BackgroundFX variant="grid" />
-        <BackgroundFX variant="waveform" />
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">6-Year Return Simulator</div>
@@ -242,8 +238,7 @@ export default function HomePage() {
 
       {/* CASH FLOW WATERFALL */}
       <section className="relative py-24 md:py-32 bg-slate-50 overflow-hidden">
-        <BackgroundFX variant="flow" />
-        <BackgroundFX variant="particles" />
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
@@ -269,15 +264,14 @@ export default function HomePage() {
                 ))}
               </ul>
             </div>
-            <CashFlowWaterfall />
+            <CashFlowRiver className="h-[420px]" />
           </div>
         </div>
       </section>
 
       {/* OPPORTUNITIES PREVIEW */}
       <section className="relative py-24 overflow-hidden">
-        <BackgroundFX variant="skyline" />
-        <BackgroundFX variant="mesh" />
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="max-w-2xl">
@@ -302,8 +296,7 @@ export default function HomePage() {
 
       {/* ASSET INTELLIGENCE */}
       <section className="relative py-24 md:py-32 bg-slate-50 overflow-hidden">
-        <BackgroundFX variant="rings" />
-        <BackgroundFX variant="matrix" />
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Asset Intelligence Engine</div>
@@ -322,7 +315,6 @@ export default function HomePage() {
 
       {/* INDIA MAP */}
       <section className="relative py-24 md:py-32 overflow-hidden">
-        <BackgroundFX variant="blobs" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <IndiaMap />
         </div>
@@ -331,9 +323,8 @@ export default function HomePage() {
       {/* LEVERAGE TEASER */}
       <section className="relative py-24 md:py-32 pv-hero-gradient pv-grain text-white overflow-hidden">
         <div className="absolute inset-0 pv-grid-overlay opacity-50" />
-        <BackgroundFX variant="ticker" dark />
-        <BackgroundFX variant="flow" dark />
-        <BackgroundFX variant="particles" dark />
+
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div>
@@ -349,29 +340,32 @@ export default function HomePage() {
                 Get Early Access to LFA <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="rounded-2xl bg-white/5 border border-white/10 p-6 backdrop-blur"
-              >
-                <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Normal Fractional</div>
-                <div className="pv-num text-3xl font-bold mt-3">₹40 L</div>
-                <div className="text-xs text-slate-400 mt-1">Equity deployed</div>
-                <div className="mt-5 text-sm text-slate-300">Owns ₹40 L exposure</div>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="rounded-2xl bg-gradient-to-br from-[#3FB36F]/15 to-[#1E63D5]/10 border border-[#3FB36F]/40 p-6 backdrop-blur pv-glow-ring"
-              >
-                <div className="text-xs uppercase tracking-widest text-[#3FB36F] font-semibold">Leveraged Fractional</div>
-                <div className="pv-num text-3xl font-bold mt-3 text-[#3FB36F]">₹20 L</div>
-                <div className="text-xs text-slate-300 mt-1">Equity + ₹20 L debt</div>
-                <div className="mt-5 text-sm text-slate-100">Accesses ₹40 L exposure</div>
-              </motion.div>
+            <div className="space-y-4">
+              <LeverageStack className="h-80 rounded-2xl bg-white/5 border border-white/10 p-2" />
+              <div className="grid grid-cols-2 gap-4">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="rounded-2xl bg-white/5 border border-white/10 p-6 backdrop-blur"
+                >
+                  <div className="text-xs uppercase tracking-widest text-slate-400 font-semibold">Normal Fractional</div>
+                  <div className="pv-num text-3xl font-bold mt-3">₹40 L</div>
+                  <div className="text-xs text-slate-400 mt-1">Equity deployed</div>
+                  <div className="mt-5 text-sm text-slate-300">Owns ₹40 L exposure</div>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="rounded-2xl bg-gradient-to-br from-[#3FB36F]/15 to-[#1E63D5]/10 border border-[#3FB36F]/40 p-6 backdrop-blur pv-glow-ring"
+                >
+                  <div className="text-xs uppercase tracking-widest text-[#3FB36F] font-semibold">Leveraged Fractional</div>
+                  <div className="pv-num text-3xl font-bold mt-3 text-[#3FB36F]">₹20 L</div>
+                  <div className="text-xs text-slate-300 mt-1">Equity + ₹20 L debt</div>
+                  <div className="mt-5 text-sm text-slate-100">Accesses ₹40 L exposure</div>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
@@ -379,8 +373,7 @@ export default function HomePage() {
 
       {/* DASHBOARD MOCKUP */}
       <section className="relative py-24 md:py-32 overflow-hidden">
-        <BackgroundFX variant="grid" />
-        <BackgroundFX variant="blocks" />
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div>
@@ -418,8 +411,7 @@ export default function HomePage() {
 
       {/* PERSONAS */}
       <section className="relative py-24 bg-slate-50 overflow-hidden">
-        <BackgroundFX variant="mesh" />
-        <BackgroundFX variant="particles" />
+
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Who It's For</div>
@@ -452,8 +444,7 @@ export default function HomePage() {
 
       {/* FINAL CTA */}
       <section className="relative py-24 bg-slate-50 overflow-hidden">
-        <BackgroundFX variant="particles" />
-        <BackgroundFX variant="flow" />
+
         <div className="relative max-w-4xl mx-auto px-6 md:px-12">
           <div className="rounded-3xl bg-[#0A2540] text-white p-10 md:p-14 relative overflow-hidden pv-glow-ring">
             <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#3FB36F]/30 blur-3xl" />
