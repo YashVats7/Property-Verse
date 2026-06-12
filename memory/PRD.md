@@ -69,3 +69,32 @@ Triggered by user request: "make it world-class, hyper visuals, full animations,
 - Forced demo watchlist alignment to v2 IDs
 
 **Tests**: 20/20 backend pytest pass; full frontend E2E pass.
+
+## v3 — Modular Backend + Admin Console + AI Asset Photography (Dec 12, 2025)
+**Backend refactor**:
+- `server.py` slim entrypoint (~60 lines)
+- New modular structure: `app/{db,security,seed}.py` + `app/routers/{auth,opportunities,leads,dashboard,admin}.py`
+- `require_admin` guard for role-based access
+- DELETE admin lead now returns 404 if nothing was deleted
+
+**New admin endpoints**:
+- `GET /api/admin/stats` (counts)
+- `GET /api/admin/leads/{waitlist|partners|strategy-calls}` (sorted desc by created_at)
+- `GET /api/admin/users` (password_hash stripped)
+- `DELETE /api/admin/leads/{collection}/{lead_id}` (admin-only)
+
+**Admin frontend** (/admin):
+- 5 KPI cards (waitlist, partners, strategy calls, investors, total users)
+- 4 tabs with filterable tables (waitlist/partners/strategy-calls/users)
+- Search + CSV export + row-level delete
+- Frontend route guard + backend 401/403 guard
+- Navbar shows Admin link only for `role==admin`
+
+**Brand**:
+- Real Property Verse PNG logo embedded at `/brand/property-verse-logo.png`
+- 8 AI-generated A-grade commercial real estate hero images via Nano Banana at `/generated/assets/opp-*.png`
+- OpportunityCard + OpportunityDetailPage use AI images with Unsplash fallback
+- Hero title now 3-line layout with shimmer gradient on "Upgraded." + descender padding
+- Bank LogoCard uses Simple Icons CDN for HDFC/ICICI/AXIS/SBI (open-license SVGs)
+
+**Tests**: 31/31 backend pytest pass + full frontend E2E pass.

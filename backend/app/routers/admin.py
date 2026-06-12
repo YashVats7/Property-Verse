@@ -74,8 +74,9 @@ async def delete_lead(collection: str, lead_id: str, _=Depends(require_admin)):
         raise HTTPException(status_code=400, detail="Unknown collection")
     try:
         oid = ObjectId(lead_id)
+        res = await coll.delete_one({"_id": oid})
     except Exception:
-        await coll.delete_one({"id": lead_id})
-        return {"ok": True}
-    res = await coll.delete_one({"_id": oid})
-    return {"ok": res.deleted_count > 0}
+        res = await coll.delete_one({"id": lead_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    return {"ok": True}
