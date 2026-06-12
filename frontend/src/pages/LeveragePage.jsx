@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { TrendingUp, CheckCircle2, ShieldCheck, Banknote, Calculator, AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
 import WaitlistForm from "../components/WaitlistForm";
+import BackgroundFX from "../components/BackgroundFX";
 
 function Stat({ label, value, accent = false }) {
   return (
@@ -63,6 +65,9 @@ export default function LeveragePage() {
       {/* Hero */}
       <section className="relative pv-hero-gradient pv-grain overflow-hidden">
         <div className="absolute inset-0 pv-grid-overlay opacity-50" />
+        <BackgroundFX variant="flow" dark />
+        <BackgroundFX variant="particles" dark />
+        <BackgroundFX variant="rings" dark />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 pt-24 pb-20 text-white">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full pv-glass-dark text-white/90 text-xs">
             <Banknote className="w-3.5 h-3.5 text-[#3FB36F]" /> LFA · Coming Soon
@@ -84,8 +89,10 @@ export default function LeveragePage() {
       </section>
 
       {/* Comparison */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 overflow-hidden">
+        <BackgroundFX variant="blocks" />
+        <BackgroundFX variant="rings" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div>
               <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Side by Side</div>
@@ -127,8 +134,10 @@ export default function LeveragePage() {
       </section>
 
       {/* How LFA works */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 bg-slate-50 overflow-hidden">
+        <BackgroundFX variant="matrix" />
+        <BackgroundFX variant="ticker" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">How LFA Works</div>
             <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-4 tracking-tighter">
@@ -148,8 +157,11 @@ export default function LeveragePage() {
       </section>
 
       {/* Calculator */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 overflow-hidden">
+        <BackgroundFX variant="waveform" />
+        <BackgroundFX variant="grid" />
+        <BackgroundFX variant="ticker" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-10">
             <div>
               <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Illustrative Calculator</div>
@@ -216,8 +228,11 @@ export default function LeveragePage() {
       </section>
 
       {/* Features */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 bg-slate-50 overflow-hidden">
+        <BackgroundFX variant="mesh" />
+        <BackgroundFX variant="particles" />
+        <BackgroundFX variant="rings" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Why LFA</div>
             <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-4 tracking-tighter">
@@ -245,8 +260,10 @@ export default function LeveragePage() {
       </section>
 
       {/* Comparison table */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 overflow-hidden">
+        <BackgroundFX variant="skyline" />
+        <BackgroundFX variant="ticker" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Where LFA Sits</div>
           <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-4 tracking-tighter max-w-3xl">
             Compare across all real estate investment options.
@@ -275,9 +292,13 @@ export default function LeveragePage() {
       </section>
 
       {/* Waitlist */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-3xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 bg-slate-50 overflow-hidden">
+        <BackgroundFX variant="flow" />
+        <BackgroundFX variant="particles" />
+        <div className="relative max-w-3xl mx-auto px-6 md:px-12">
           <div className="rounded-3xl bg-[#0A2540] text-white p-10 md:p-12 relative overflow-hidden">
+            <BackgroundFX variant="ticker" dark />
+            <BackgroundFX variant="flow" dark />
             <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#3FB36F]/30 blur-3xl" />
             <div className="relative">
               <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Early Access</div>

@@ -39,6 +39,34 @@ function simpleIconUrl(slug, color) {
   return `https://cdn.simpleicons.org/${slug}/${hex}`;
 }
 
+function SimpleOrFallback({ brand, big = false }) {
+  const cls = big ? "w-6 h-6" : "w-5 h-5";
+  const blockCls = big ? "w-7 h-7" : "w-2.5 h-2.5";
+  if (!brand.slug) {
+    return big ? (
+      <div className={`${blockCls} rounded-md flex items-center justify-center text-white font-extrabold text-[10px]`} style={{ background: brand.color }}>
+        {(brand.short || brand.name).slice(0, 1)}
+      </div>
+    ) : (
+      <div className={`${blockCls} rounded-sm`} style={{ background: brand.color }} />
+    );
+  }
+  return (
+    <img
+      src={`https://cdn.simpleicons.org/${brand.slug}/${(brand.color || "0A2540").replace("#", "")}`}
+      alt={`${brand.name} mark`}
+      className={`${cls} object-contain`}
+      loading="lazy"
+      onError={(e) => {
+        // hide broken image; sibling fallback chip will show via grid
+        e.currentTarget.style.display = "none";
+        const fb = e.currentTarget.nextElementSibling;
+        if (fb) fb.style.display = "inline-flex";
+      }}
+    />
+  );
+}
+
 export function PlatformLogo({ brand, size = "md", testId }) {
   const cls = size === "sm" ? "h-12 px-4 text-sm" : "h-14 px-5 text-base";
   return (
@@ -48,16 +76,7 @@ export function PlatformLogo({ brand, size = "md", testId }) {
       data-testid={testId}
       className={`pv-logo-card flex items-center justify-center gap-2 ${cls} min-w-[170px]`}
     >
-      {brand.slug ? (
-        <img
-          src={simpleIconUrl(brand.slug, brand.color)}
-          alt={`${brand.name} mark`}
-          className="w-5 h-5 object-contain"
-          loading="lazy"
-        />
-      ) : (
-        <div className="w-2.5 h-2.5 rounded-sm" style={{ background: brand.color }} />
-      )}
+      <SimpleOrFallback brand={brand} />
       <div className="leading-none">
         <div className="font-['Cabinet_Grotesk'] font-extrabold tracking-tight" style={{ color: brand.color }}>
           {brand.name}
@@ -77,12 +96,25 @@ export function BankLogo({ brand, size = "md", testId }) {
       className={`pv-logo-card flex items-center justify-center gap-2 ${cls} min-w-[180px]`}
     >
       {brand.slug ? (
-        <img
-          src={simpleIconUrl(brand.slug, brand.color)}
-          alt={`${brand.name} mark`}
-          className="w-6 h-6 object-contain"
-          loading="lazy"
-        />
+        <>
+          <img
+            src={`https://cdn.simpleicons.org/${brand.slug}/${(brand.color || "0A2540").replace("#", "")}`}
+            alt={`${brand.name} mark`}
+            className="w-6 h-6 object-contain"
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+              const sib = e.currentTarget.nextElementSibling;
+              if (sib) sib.style.display = "flex";
+            }}
+          />
+          <span
+            className="w-7 h-7 rounded-md hidden items-center justify-center text-white font-extrabold text-[10px]"
+            style={{ background: brand.color }}
+          >
+            {brand.short.slice(0, 1)}
+          </span>
+        </>
       ) : (
         <div className="w-7 h-7 rounded-md flex items-center justify-center text-white font-extrabold text-[10px]" style={{ background: brand.color }}>
           {brand.short.slice(0, 1)}

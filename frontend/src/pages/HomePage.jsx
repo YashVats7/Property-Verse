@@ -11,6 +11,7 @@ import WaitlistForm from "../components/WaitlistForm";
 import { PLATFORM_BRANDS, BANK_BRANDS, PlatformLogo, BankLogo } from "../components/LogoCard";
 import { HeroAssetCard, ReturnSimulator, CashFlowWaterfall, AssetIntelligence, IndiaMap, DashboardMockup, CountUp } from "../components/Animated";
 import InvestmentWalkthrough from "../components/InvestmentWalkthrough";
+import BackgroundFX from "../components/BackgroundFX";
 
 const PILLARS = [
   { icon: Layers, title: "Aggregator Marketplace", desc: "Compare curated fractional real estate opportunities across trusted platforms and asset owners." },
@@ -41,6 +42,8 @@ export default function HomePage() {
       {/* HERO */}
       <section className="relative overflow-hidden pv-hero-gradient pv-grain">
         <div className="absolute inset-0 pv-grid-overlay opacity-60" />
+        <BackgroundFX variant="particles" dark />
+        <BackgroundFX variant="flow" dark />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 pt-20 pb-28 md:pt-28 md:pb-36">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <motion.div
@@ -97,8 +100,9 @@ export default function HomePage() {
       </section>
 
       {/* ECOSYSTEM LOGOS */}
-      <section className="border-y border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-12">
+      <section className="relative border-y border-slate-200 bg-white overflow-hidden">
+        <BackgroundFX variant="mesh" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12 py-12">
           <div className="text-center">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Real Estate Investment Ecosystem</div>
             <div className="font-['Cabinet_Grotesk'] text-2xl md:text-3xl font-extrabold text-[#0A2540] mt-2 tracking-tighter">
@@ -139,6 +143,8 @@ export default function HomePage() {
       {stats && (
         <section className="bg-gradient-to-br from-[#0A2540] to-[#0F3FA1] text-white relative overflow-hidden">
           <div className="absolute inset-0 pv-grid-overlay opacity-30" />
+          <BackgroundFX variant="flow" dark />
+          <BackgroundFX variant="ticker" dark />
           <div className="relative max-w-7xl mx-auto px-6 md:px-12 py-14 grid grid-cols-2 md:grid-cols-5 gap-8">
             {[
               { v: <>₹<CountUp end={stats.aum_inr_cr} />Cr+</>, l: "Curated AUM" },
@@ -163,8 +169,10 @@ export default function HomePage() {
       )}
 
       {/* PILLARS */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <BackgroundFX variant="blocks" />
+        <BackgroundFX variant="ticker" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">What is Property Verse</div>
             <h2 className="font-['Clash_Display'] text-4xl md:text-6xl font-bold text-[#0A2540] mt-4 tracking-tighter">
@@ -213,8 +221,10 @@ export default function HomePage() {
       </div>
 
       {/* 6-YEAR SIMULATOR */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <BackgroundFX variant="grid" />
+        <BackgroundFX variant="waveform" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">6-Year Return Simulator</div>
             <h2 className="font-['Clash_Display'] text-4xl md:text-6xl font-bold text-[#0A2540] mt-4 tracking-tighter">
@@ -231,8 +241,10 @@ export default function HomePage() {
       </section>
 
       {/* CASH FLOW WATERFALL */}
-      <section className="py-24 md:py-32 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 md:py-32 bg-slate-50 overflow-hidden">
+        <BackgroundFX variant="flow" />
+        <BackgroundFX variant="particles" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <div>
               <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Cash Flow Waterfall</div>
@@ -263,8 +275,10 @@ export default function HomePage() {
       </section>
 
       {/* OPPORTUNITIES PREVIEW */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 overflow-hidden">
+        <BackgroundFX variant="skyline" />
+        <BackgroundFX variant="mesh" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="max-w-2xl">
               <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Curated Opportunities</div>
@@ -287,8 +301,10 @@ export default function HomePage() {
       </section>
 
       {/* ASSET INTELLIGENCE */}
-      <section className="py-24 md:py-32 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 md:py-32 bg-slate-50 overflow-hidden">
+        <BackgroundFX variant="rings" />
+        <BackgroundFX variant="matrix" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Asset Intelligence Engine</div>
             <h2 className="font-['Clash_Display'] text-4xl md:text-6xl font-bold text-[#0A2540] mt-4 tracking-tighter">
@@ -305,15 +321,19 @@ export default function HomePage() {
       </section>
 
       {/* INDIA MAP */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <BackgroundFX variant="blobs" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <IndiaMap />
         </div>
       </section>
 
       {/* LEVERAGE TEASER */}
-      <section className="py-24 md:py-32 pv-hero-gradient pv-grain text-white relative overflow-hidden">
+      <section className="relative py-24 md:py-32 pv-hero-gradient pv-grain text-white overflow-hidden">
         <div className="absolute inset-0 pv-grid-overlay opacity-50" />
+        <BackgroundFX variant="ticker" dark />
+        <BackgroundFX variant="flow" dark />
+        <BackgroundFX variant="particles" dark />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div>
@@ -358,8 +378,10 @@ export default function HomePage() {
       </section>
 
       {/* DASHBOARD MOCKUP */}
-      <section className="py-24 md:py-32">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <BackgroundFX variant="grid" />
+        <BackgroundFX variant="blocks" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-14 items-center">
             <div>
               <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Investor Dashboard</div>
@@ -395,8 +417,10 @@ export default function HomePage() {
       </section>
 
       {/* PERSONAS */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 bg-slate-50 overflow-hidden">
+        <BackgroundFX variant="mesh" />
+        <BackgroundFX variant="particles" />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
             <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Who It's For</div>
             <h2 className="font-['Clash_Display'] text-4xl md:text-5xl font-bold text-[#0A2540] mt-4 tracking-tighter">
@@ -427,8 +451,10 @@ export default function HomePage() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-4xl mx-auto px-6 md:px-12">
+      <section className="relative py-24 bg-slate-50 overflow-hidden">
+        <BackgroundFX variant="particles" />
+        <BackgroundFX variant="flow" />
+        <div className="relative max-w-4xl mx-auto px-6 md:px-12">
           <div className="rounded-3xl bg-[#0A2540] text-white p-10 md:p-14 relative overflow-hidden pv-glow-ring">
             <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#3FB36F]/30 blur-3xl" />
             <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#1E63D5]/30 blur-3xl" />

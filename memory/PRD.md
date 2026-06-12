@@ -98,3 +98,27 @@ Triggered by user request: "make it world-class, hyper visuals, full animations,
 - Bank LogoCard uses Simple Icons CDN for HDFC/ICICI/AXIS/SBI (open-license SVGs)
 
 **Tests**: 31/31 backend pytest pass + full frontend E2E pass.
+
+## v4 — Cinematic Background Visuals (Dec 12, 2025)
+Per user request: "background visuals everywhere, dynamic moving, exciting to view, glaze for the eyes, scrolling should feel like a simulation".
+
+**New `BackgroundFX` component** with 11 animated variants (all CSS/SVG + framer-motion, no external assets):
+- `blobs` — drifting color orbs (24s loop)
+- `grid` — moving grid with horizontal + vertical scan lines
+- `particles` — 36 glowing dots floating upward
+- `skyline` — SVG city skyline parallax (depth on scroll)
+- `flow` — 5 cash-flow curves with traveling dashes + pulse dots
+- `ticker` — 18 floating numeric labels (₹80 Cr, 17% IRR, etc.) drifting horizontally
+- `mesh` — pulsing multi-color radial gradient overlay
+- `rings` — 4 expanding pulse-ring clusters
+- `matrix` — falling fintech digits/₹/% column rain
+- `waveform` — 60-bar animated equalizer
+- `blocks` — rotating fractional-ownership cube fragments
+
+**Applied across all HomePage sections**: hero (particles+flow), ecosystem (mesh), stats (flow+ticker), pillars (blocks+ticker), simulator (grid+waveform), cash flow waterfall (flow+particles), opportunities (skyline+mesh), asset intelligence (rings+matrix), India map (blobs), leverage teaser (ticker+flow+particles), dashboard mockup (grid+blocks), personas (mesh+particles), final CTA (particles+flow).
+
+**Applied across all LeveragePage sections**: hero (flow+particles+rings), comparison (blocks+rings), 5-step (matrix+ticker), calculator (waveform+grid+ticker), features (mesh+particles+rings), comparison table (skyline+ticker), waitlist (flow+particles).
+
+**Marketplace page**: untouched per user request.
+
+**Polish**: LogoCard now has Simple Icons CDN onError fallback (graceful broken-image handling); ticker opacity dialed down for dark backgrounds to keep headlines readable.
