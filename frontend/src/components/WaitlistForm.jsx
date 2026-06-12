@@ -28,8 +28,8 @@ export default function WaitlistForm({ source = "investor_waitlist", title = "Jo
 
   if (done) {
     return (
-      <div data-testid={`${testIdPrefix}-success`} className="rounded-2xl border border-[#10B981]/40 bg-white p-8 text-center">
-        <CheckCircle2 className="w-12 h-12 text-[#10B981] mx-auto" />
+      <div data-testid={`${testIdPrefix}-success`} className="rounded-2xl border border-[#3FB36F]/40 bg-white p-8 text-center">
+        <CheckCircle2 className="w-12 h-12 text-[#3FB36F] mx-auto" />
         <div className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540] mt-4">You're In.</div>
         <p className="text-slate-600 mt-2">Our investor relations team will reach out within 24 hours.</p>
       </div>
@@ -82,7 +82,7 @@ export default function WaitlistForm({ source = "investor_waitlist", title = "Jo
         type="submit"
         disabled={loading}
         data-testid={`${testIdPrefix}-submit-btn`}
-        className="group w-full md:w-auto px-7 py-3.5 rounded-full bg-[#10B981] text-white font-semibold hover:bg-[#059669] transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60"
+        className="group w-full md:w-auto px-7 py-3.5 rounded-full bg-[#3FB36F] text-white font-semibold hover:bg-[#1E63D5] transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60"
       >
         {loading ? "Submitting…" : ctaLabel}
         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

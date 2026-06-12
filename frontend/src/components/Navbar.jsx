@@ -1,10 +1,11 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Menu, X, Building2, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { useAuth } from "../lib/auth";
+import Logo from "./Logo";
 
 const NAV = [
-  { to: "/opportunities", label: "Opportunities" },
+  { to: "/opportunities", label: "Marketplace" },
   { to: "/leverage", label: "Leverage Product" },
   { to: "/about", label: "About" },
   { to: "/partners", label: "Partners" },
@@ -34,14 +35,8 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
-        <Link to="/" data-testid="nav-logo-link" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-[#0A2540] flex items-center justify-center group-hover:scale-105 transition-transform">
-            <Building2 className="w-5 h-5 text-[#10B981]" />
-          </div>
-          <div className="leading-tight">
-            <div className="font-['Cabinet_Grotesk'] font-extrabold text-[#0A2540] text-lg tracking-tight">Property Verse</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-slate-500 font-medium">Real Estate, Upgraded</div>
-          </div>
+        <Link to="/" data-testid="nav-logo-link" className="group">
+          <Logo />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1">
@@ -91,7 +86,7 @@ export default function Navbar() {
               <Link
                 to="/signup"
                 data-testid="nav-signup-link"
-                className="group px-5 py-2.5 rounded-full bg-[#10B981] text-white text-sm font-semibold hover:bg-[#059669] transition-colors inline-flex items-center gap-1.5"
+                className="group px-5 py-2.5 rounded-full bg-gradient-to-r from-[#3FB36F] to-[#1E63D5] text-white text-sm font-semibold hover:shadow-[0_8px_24px_rgba(63,179,111,0.40)] transition-all inline-flex items-center gap-1.5"
               >
                 Open Account
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -136,7 +131,7 @@ export default function Navbar() {
             ) : (
               <>
                 <Link to="/login" data-testid="mobile-nav-login-link" className="px-4 py-3 rounded-xl text-sm font-medium text-[#0A2540]">Sign In</Link>
-                <Link to="/signup" data-testid="mobile-nav-signup-link" className="px-4 py-3 rounded-xl text-sm font-semibold bg-[#10B981] text-white text-center">
+                <Link to="/signup" data-testid="mobile-nav-signup-link" className="px-4 py-3 rounded-xl text-sm font-semibold bg-[#3FB36F] text-white text-center">
                   Open Account
                 </Link>
               </>

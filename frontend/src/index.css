@@ -2,14 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Premium fonts: Cabinet Grotesk + Satoshi from Fontshare */
-@import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800,900&f[]=satoshi@300,400,500,700,900&display=swap');
+/* Premium fonts: Cabinet Grotesk + Satoshi + Clash Display from Fontshare */
+@import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800,900&f[]=satoshi@300,400,500,700,900&f[]=clash-display@400,500,600,700&f[]=tanker@400&display=swap');
 
 :root {
   --pv-navy: #0A2540;
+  --pv-blue: #1E63D5;
+  --pv-blue-deep: #0F3FA1;
   --pv-navy-light: #0F3860;
   --pv-emerald: #10B981;
-  --pv-emerald-dark: #059669;
+  --pv-green: #3FB36F;
+  --pv-green-light: #6EE7B7;
   --pv-bg: #FFFFFF;
   --pv-surface: #F8FAFC;
   --pv-text: #0F172A;
@@ -68,9 +71,10 @@ h1, h2, h3, h4, h5, h6 {
 /* Premium gradients */
 .pv-hero-gradient {
   background:
-    radial-gradient(ellipse at top left, rgba(16,185,129,0.18), transparent 50%),
-    radial-gradient(ellipse at bottom right, rgba(10,37,64,0.92), rgba(10,37,64,1) 70%),
-    linear-gradient(135deg, #0A2540 0%, #0F3860 50%, #0A2540 100%);
+    radial-gradient(ellipse at top left, rgba(63,179,111,0.22), transparent 50%),
+    radial-gradient(ellipse 80% 50% at 80% 0%, rgba(30,99,213,0.28), transparent 60%),
+    radial-gradient(ellipse at bottom right, rgba(10,37,64,0.95), rgba(10,37,64,1) 70%),
+    linear-gradient(135deg, #0A2540 0%, #0F3FA1 45%, #0A2540 100%);
 }
 
 .pv-section-gradient {
@@ -78,10 +82,22 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pv-text-gradient {
-  background: linear-gradient(135deg, #10B981 0%, #6EE7B7 100%);
+  background: linear-gradient(135deg, #3FB36F 0%, #6EE7B7 60%, #1E63D5 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.pv-text-shimmer {
+  background: linear-gradient(110deg, #3FB36F 0%, #6EE7B7 25%, #1E63D5 50%, #6EE7B7 75%, #3FB36F 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: pv-shimmer 6s linear infinite;
+}
+@keyframes pv-shimmer {
+  to { background-position: -200% 0; }
 }
 
 /* Glassmorphism card */
@@ -160,6 +176,54 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Number tabular */
 .pv-num { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+/* Mesh background blobs */
+.pv-mesh {
+  background:
+    radial-gradient(800px 400px at 10% 10%, rgba(30,99,213,0.10), transparent 50%),
+    radial-gradient(700px 400px at 90% 30%, rgba(63,179,111,0.10), transparent 50%),
+    radial-gradient(600px 300px at 50% 90%, rgba(110,231,183,0.08), transparent 50%);
+}
+
+/* Animated dashed line for cash flow */
+@keyframes pv-dash {
+  to { stroke-dashoffset: -30; }
+}
+.pv-dash {
+  stroke-dasharray: 6 6;
+  animation: pv-dash 1.5s linear infinite;
+}
+
+/* Conic spin */
+@keyframes pv-spin-slow {
+  to { transform: rotate(360deg); }
+}
+.pv-spin-slow { animation: pv-spin-slow 14s linear infinite; }
+
+/* Floating */
+@keyframes pv-float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.pv-float { animation: pv-float 5s ease-in-out infinite; }
+
+/* Glow ring */
+.pv-glow-ring {
+  box-shadow: 0 0 0 1px rgba(63,179,111,0.25), 0 0 60px rgba(30,99,213,0.35);
+}
+
+/* Logo card grayscale */
+.pv-logo-card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  transition: all 0.3s ease;
+}
+.pv-logo-card:hover {
+  border-color: #1E63D5;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(30,99,213,0.10);
+}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }

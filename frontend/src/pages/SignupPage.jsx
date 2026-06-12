@@ -32,10 +32,10 @@ export default function SignupPage() {
       <div className="flex items-center justify-center p-8 md:p-16 bg-white order-2 lg:order-1">
         <div className="w-full max-w-md">
           <Link to="/" className="inline-flex items-center gap-2.5 lg:hidden mb-8">
-            <div className="w-9 h-9 rounded-xl bg-[#0A2540] flex items-center justify-center"><Building2 className="w-4 h-4 text-[#10B981]" /></div>
+            <div className="w-9 h-9 rounded-xl bg-[#0A2540] flex items-center justify-center"><Building2 className="w-4 h-4 text-[#3FB36F]" /></div>
             <span className="font-['Cabinet_Grotesk'] font-extrabold text-[#0A2540]">Property Verse</span>
           </Link>
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Open an Investor Account</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Open an Investor Account</div>
           <h1 className="font-['Cabinet_Grotesk'] text-3xl md:text-4xl font-extrabold text-[#0A2540] mt-3 tracking-tighter">Create your account.</h1>
           <p className="text-slate-600 mt-3">Curated opportunities, watchlists, and LFA early access — all in one place.</p>
 
@@ -53,13 +53,13 @@ export default function SignupPage() {
               <input data-testid="signup-input-password" type="password" required minLength={6} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="mt-1.5 w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />
               <div className="text-[11px] text-slate-500 mt-1.5">Minimum 6 characters</div>
             </div>
-            <button data-testid="signup-submit-btn" disabled={loading} className="w-full px-6 py-3.5 rounded-full bg-[#10B981] text-white font-semibold hover:bg-[#059669] transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60">
+            <button data-testid="signup-submit-btn" disabled={loading} className="w-full px-6 py-3.5 rounded-full bg-[#3FB36F] text-white font-semibold hover:bg-[#1E63D5] transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60">
               {loading ? "Creating account…" : "Open Account"} <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
           <div className="mt-6 text-sm text-slate-600">
-            Already have an account? <Link to="/login" data-testid="signup-go-login" className="font-semibold text-[#0A2540] hover:text-[#10B981]">Sign in</Link>
+            Already have an account? <Link to="/login" data-testid="signup-go-login" className="font-semibold text-[#0A2540] hover:text-[#3FB36F]">Sign in</Link>
           </div>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function SignupPage() {
                 "Bank/NBFC financing rail visibility",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#10B981] mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-[#3FB36F] mt-0.5 flex-shrink-0" />
                   <span className="text-sm text-slate-200">{t}</span>
                 </li>
               ))}

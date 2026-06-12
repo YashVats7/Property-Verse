@@ -27,7 +27,7 @@ export default function OpportunitiesPage() {
   return (
     <div data-testid="opportunities-page" className="pv-section-gradient">
       <section className="max-w-7xl mx-auto px-6 md:px-12 pt-16 pb-10">
-        <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Marketplace</div>
+        <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Marketplace</div>
         <h1 className="font-['Cabinet_Grotesk'] text-4xl md:text-5xl font-extrabold text-[#0A2540] mt-3 tracking-tighter max-w-3xl">
           Curated fractional real estate opportunities.
         </h1>

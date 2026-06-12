@@ -1,0 +1,50 @@
+{
+  "summary": "Iteration-2 full-stack regression after Property Verse v2 UI overhaul. Backend: 20/20 pytest cases pass against public URL — covers new SAMPLE_OPPORTUNITIES (8 IDs), required new fields (leverage_available, asset_value_cr, target_irr_range, risk_score), idempotent logout, demo-investor watchlist migration check, lead-capture, dashboard CRUD, auth. Frontend: homepage v2 (hero cash-flow card, 24 platform logos + 16 bank logos, 6-step interactive walkthrough, 6-year simulator slider, 6 India-map cities, 3 home-opp cards), marketplace (8 cards with leverage badge, navigate to detail OK), leverage page (6 sliders, LFA waitlist form), auth flow (login -> /dashboard with watchlist + recommendations; signup -> /dashboard; logout -> /login) — all functional with no page-level JS errors.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/opportunities (filter city=Mumbai)", "issue": "Only 1 Mumbai asset in new SAMPLE_OPPORTUNITIES (opp-bkc-skyline). Previous test expected >=2; updated to >=1. Not a bug, just dataset shape."},
+      {"endpoint": "startup demo-investor watchlist migration", "issue": "Migration replaces the watchlist only when NONE of the current IDs intersect SAMPLE_OPPORTUNITIES. Because the old IDs opp-bkc-skyline and opp-orr-prism are STILL present in the new SAMPLE_OPPORTUNITIES list, the demo investor's watchlist is never replaced with the requested ['opp-blr-grade-a','opp-leverage-alpha']. Dashboard still loads with 2 valid items so the literal acceptance criterion ('>=1 valid opportunity') passes, but the intent described in the spec (default demo watchlist == new IDs) is NOT met for existing demo users."},
+      {"endpoint": "seed_admin / seed_test_user (startup)", "issue": "Seed still only inserts on missing users; password drift from .env is NOT propagated to existing users (carried over from iteration_1)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "HomePage walkthrough / simulator sections", "issues": ["Recharts emits repeated 'The width(-1) and height(-1) of chart should be greater than 0' warnings on first paint for ResponsiveContainer charts that mount while offscreen. Charts render correctly on scroll, but console noise should be addressed by setting an explicit minWidth/aspect or by delay-mounting until in-view."]}
+    ],
+    "spec_vs_impl_naming_mismatches": [
+      "Spec data-testid 'lfa-input-equity / lfa-input-leverage / lfa-input-rate / lfa-input-years' does not match implementation: actual LFA calculator IDs are lfa-input-exposure, lfa-input-equity_pct, lfa-input-interest, lfa-input-yield, lfa-input-hold_years, lfa-input-exit_appn. All sliders work; only the naming differs.",
+      "Spec lists nav-link-leverage but actual is nav-link-leverage-product (carry-over from iteration_1)."
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Tighten the startup migration so that EXISTING demo investors are explicitly aligned to the new watchlist ['opp-blr-grade-a','opp-leverage-alpha'] (either drop the intersection check OR add a one-time migration flag), per the v2 spec.",
+    "Make the startup seed upsert admin/test passwords from env vars when they change (still pending from iteration_1).",
+    "Eliminate Recharts width(-1) warnings on the homepage by giving ResponsiveContainer an explicit aspect / minWidth, or by deferring chart mount until the section enters viewport.",
+    "Align LFA calculator data-testids in either the spec or the implementation (currently exposure/equity_pct/interest/yield/hold_years/exit_appn vs spec equity/leverage/rate/years)."
+  ],
+  "critical_code_review_comments": [
+    "server.py is now 527 lines mixing models, helpers, auth routes, opportunities seed, lead-capture, dashboard and startup logic — long-overdue split into routers/, models/, seed.py.",
+    "SAMPLE_OPPORTUNITIES is still in-memory; any admin tooling that mutates opportunities will not persist. Acceptable for MVP only.",
+    "CORS allow_credentials=True with allow_origins built from env FRONTEND_URL only — good. Unused CORS_ORIGINS env (if present) should be removed to avoid drift.",
+    "Login attempt lockout keyed on (client_host:email). Behind a Kubernetes ingress, client_host may collapse to a small set of upstream IPs and shared NATs can lock out unrelated users. OK for MVP, but should be tracked.",
+    "/api/auth/logout is now idempotent (no auth dep). Good fix.",
+    "Brand color refresh #3FB36F + #1E63D5 looks clean on the marketplace/dashboard; success-toast and 'Welcome back' notification render correctly with sufficient contrast."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "Demo investor investor@propertyverse.in / Investor2025! and admin admin@propertyverse.in / PropVerseAdmin2025! both verified working via /api/auth/login and UI.",
+  "seed_data_creation": "Created a fresh signup user e2e_*@example.com (auto-redirects to /dashboard) and a fresh watchlist-CRUD user test_wl_*@example.com inside pytest. Submitted TEST_ prefixed leads to /api/waitlist, /api/partner, /api/strategy-call. Did NOT mutate the demo investor watchlist via UI in this iteration; demo dashboard still shows opp-bkc-skyline + opp-orr-prism (both valid).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Use /app/backend/tests/backend_test.py (pytest) as the regression baseline — 20/20 passing. Note the actual LFA calculator data-testids are exposure/equity_pct/interest/yield/hold_years/exit_appn (NOT equity/leverage/rate/years as the spec snippet suggests). Demo investor watchlist remains the legacy ['opp-bkc-skyline','opp-orr-prism'] because both IDs are still valid in the new SAMPLE_OPPORTUNITIES; the current migration only triggers when zero valid IDs remain. If the main agent intends ['opp-blr-grade-a','opp-leverage-alpha'] as the default demo watchlist for *existing* users, the startup migration must be tightened.",
+  "rca_of_the_issue": "No blocker bugs. The demo-watchlist 'not aligned to new IDs' observation has a clear RCA: in server.py on_startup, the branch `if not (current & valid_ids):` only fires when the user's current watchlist intersects with SAMPLE_OPPORTUNITIES is EMPTY. Because opp-bkc-skyline and opp-orr-prism were retained in the new 8-asset list, the intersection is non-empty and the watchlist is never updated. Repro: log in as investor@propertyverse.in -> /dashboard shows BKC Skyline + ORR Prism, not Grade-A Office Park + Alpha Leverage Pool I. Fix: either drop the intersection guard, or maintain a `watchlist_migration_version` field on the user document and force-update when it lags the current version."
+}

@@ -27,7 +27,7 @@ export default function ContactPage() {
       <section className="pv-hero-gradient pv-grain text-white relative overflow-hidden">
         <div className="absolute inset-0 pv-grid-overlay opacity-50" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 pt-24 pb-20">
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Contact</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Contact</div>
           <h1 className="font-['Cabinet_Grotesk'] text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter max-w-4xl">
             Book a <span className="pv-text-gradient">strategy call.</span>
           </h1>
@@ -47,7 +47,7 @@ export default function ContactPage() {
               { i: MapPin, l: "Office", v: "Mumbai · Bengaluru · Gurugram" },
             ].map((x) => (
               <div key={x.l} className="pv-card p-5 flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#10B981]/10 flex items-center justify-center"><x.i className="w-5 h-5 text-[#10B981]" /></div>
+                <div className="w-10 h-10 rounded-lg bg-[#3FB36F]/10 flex items-center justify-center"><x.i className="w-5 h-5 text-[#3FB36F]" /></div>
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">{x.l}</div>
                   <div className="font-semibold text-[#0A2540] mt-0.5">{x.v}</div>
@@ -58,14 +58,14 @@ export default function ContactPage() {
 
           <div className="lg:col-span-2 pv-card p-8">
             <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-[#10B981]" />
+              <Calendar className="w-5 h-5 text-[#3FB36F]" />
               <div className="text-xs uppercase tracking-widest text-slate-500 font-semibold">30-min strategy call</div>
             </div>
             <h2 className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540] mt-3">Tell us about your investment goals.</h2>
 
             {done ? (
-              <div data-testid="strategy-call-success" className="mt-8 rounded-2xl border border-[#10B981]/30 bg-[#10B981]/5 p-8 text-center">
-                <CheckCircle2 className="w-12 h-12 text-[#10B981] mx-auto" />
+              <div data-testid="strategy-call-success" className="mt-8 rounded-2xl border border-[#3FB36F]/30 bg-[#3FB36F]/5 p-8 text-center">
+                <CheckCircle2 className="w-12 h-12 text-[#3FB36F] mx-auto" />
                 <div className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540] mt-4">Call request received.</div>
                 <p className="text-slate-600 mt-2">Our investor relations team will reach out within 24 hours to confirm a time.</p>
               </div>
@@ -85,7 +85,7 @@ export default function ContactPage() {
                   <option value="5Cr+">₹5 Cr+</option>
                 </select>
                 <textarea data-testid="strategy-input-notes" placeholder="Anything specific you'd like to discuss?" rows="4" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />
-                <button data-testid="strategy-submit-btn" disabled={loading} className="px-7 py-3.5 rounded-full bg-[#10B981] text-white font-semibold hover:bg-[#059669] transition-colors inline-flex items-center gap-2 disabled:opacity-60">
+                <button data-testid="strategy-submit-btn" disabled={loading} className="px-7 py-3.5 rounded-full bg-[#3FB36F] text-white font-semibold hover:bg-[#1E63D5] transition-colors inline-flex items-center gap-2 disabled:opacity-60">
                   {loading ? "Submitting…" : "Book Strategy Call"} <ArrowRight className="w-4 h-4" />
                 </button>
               </form>

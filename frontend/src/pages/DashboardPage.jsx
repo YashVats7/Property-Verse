@@ -41,7 +41,7 @@ export default function DashboardPage() {
       <section className="pv-hero-gradient pv-grain text-white relative overflow-hidden">
         <div className="absolute inset-0 pv-grid-overlay opacity-60" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 pt-16 pb-24">
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Investor Dashboard</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Investor Dashboard</div>
           <h1 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold mt-3 tracking-tighter">
             Welcome, {user?.name?.split(" ")[0] || "Investor"}.
           </h1>
@@ -54,17 +54,17 @@ export default function DashboardPage() {
       <section className="max-w-7xl mx-auto px-6 md:px-12 -mt-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="pv-card p-6">
-            <div className="flex items-center gap-2 text-[#10B981]"><Wallet className="w-5 h-5" /><span className="text-xs uppercase tracking-widest font-semibold">Portfolio Value</span></div>
+            <div className="flex items-center gap-2 text-[#3FB36F]"><Wallet className="w-5 h-5" /><span className="text-xs uppercase tracking-widest font-semibold">Portfolio Value</span></div>
             <div className="pv-num text-3xl font-extrabold text-[#0A2540] mt-3">{inr(data?.portfolio_value_inr || 0)}</div>
             <div className="text-xs text-slate-500 mt-1">Once investments go live</div>
           </div>
           <div className="pv-card p-6">
-            <div className="flex items-center gap-2 text-[#10B981]"><Bookmark className="w-5 h-5" /><span className="text-xs uppercase tracking-widest font-semibold">Watchlist</span></div>
+            <div className="flex items-center gap-2 text-[#3FB36F]"><Bookmark className="w-5 h-5" /><span className="text-xs uppercase tracking-widest font-semibold">Watchlist</span></div>
             <div className="pv-num text-3xl font-extrabold text-[#0A2540] mt-3">{data?.watchlist?.length ?? 0}</div>
             <div className="text-xs text-slate-500 mt-1">Saved opportunities</div>
           </div>
           <div className="pv-card p-6">
-            <div className="flex items-center gap-2 text-[#10B981]"><Sparkles className="w-5 h-5" /><span className="text-xs uppercase tracking-widest font-semibold">LFA Access</span></div>
+            <div className="flex items-center gap-2 text-[#3FB36F]"><Sparkles className="w-5 h-5" /><span className="text-xs uppercase tracking-widest font-semibold">LFA Access</span></div>
             <div className="text-lg font-bold text-[#0A2540] mt-3">Early-Access Queued</div>
             <div className="text-xs text-slate-500 mt-1">We'll notify you on launch</div>
           </div>
@@ -74,10 +74,10 @@ export default function DashboardPage() {
       <section className="max-w-7xl mx-auto px-6 md:px-12 mt-16">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Your Watchlist</div>
+            <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Your Watchlist</div>
             <h2 className="font-['Cabinet_Grotesk'] text-2xl md:text-3xl font-extrabold text-[#0A2540] mt-2 tracking-tighter">Saved opportunities</h2>
           </div>
-          <Link to="/opportunities" data-testid="dashboard-browse-link" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0A2540] hover:text-[#10B981]">
+          <Link to="/opportunities" data-testid="dashboard-browse-link" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0A2540] hover:text-[#3FB36F]">
             Browse marketplace <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -115,7 +115,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="max-w-7xl mx-auto px-6 md:px-12 mt-20">
-        <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Recommended For You</div>
+        <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Recommended For You</div>
         <h2 className="font-['Cabinet_Grotesk'] text-2xl md:text-3xl font-extrabold text-[#0A2540] mt-2 tracking-tighter">Hand-picked opportunities</h2>
         <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {(data?.recommended || []).map((o) => <OpportunityCard key={o.id} o={o} testIdPrefix="dashboard-rec" />)}

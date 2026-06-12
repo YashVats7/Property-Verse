@@ -59,7 +59,7 @@ export default function OpportunityDetailPage() {
           </div>
 
           <div className="mt-10">
-            <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Asset Summary</div>
+            <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Asset Summary</div>
             <h2 className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540] mt-2">{o.highlight}</h2>
           </div>
 
@@ -97,7 +97,7 @@ export default function OpportunityDetailPage() {
             <div className="mt-4 grid grid-cols-2 gap-3">
               <div className="rounded-xl bg-slate-50 p-3">
                 <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Rental Yield</div>
-                <div className="pv-num text-xl font-bold text-[#10B981] mt-1">{o.rental_yield.toFixed(1)}%</div>
+                <div className="pv-num text-xl font-bold text-[#3FB36F] mt-1">{o.rental_yield.toFixed(1)}%</div>
               </div>
               <div className="rounded-xl bg-slate-50 p-3">
                 <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Min Investment</div>
@@ -111,7 +111,7 @@ export default function OpportunityDetailPage() {
                 <span className="pv-num font-semibold text-[#0A2540]">{o.funded_pct}%</span>
               </div>
               <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-                <div className="h-full rounded-full bg-gradient-to-r from-[#0A2540] to-[#10B981]" style={{ width: `${o.funded_pct}%` }} />
+                <div className="h-full rounded-full bg-gradient-to-r from-[#0A2540] to-[#3FB36F]" style={{ width: `${o.funded_pct}%` }} />
               </div>
             </div>
 
@@ -119,7 +119,7 @@ export default function OpportunityDetailPage() {
               onClick={saveToWatchlist}
               disabled={saving}
               data-testid="opp-detail-save-btn"
-              className="mt-6 w-full px-6 py-3.5 rounded-full bg-[#10B981] text-white font-semibold hover:bg-[#059669] transition-colors disabled:opacity-60"
+              className="mt-6 w-full px-6 py-3.5 rounded-full bg-[#3FB36F] text-white font-semibold hover:bg-[#1E63D5] transition-colors disabled:opacity-60"
             >
               {saving ? "Saving…" : "Add to Watchlist"}
             </button>
@@ -135,7 +135,7 @@ export default function OpportunityDetailPage() {
           <div className="pv-card p-6">
             <div className="text-xs uppercase tracking-widest text-slate-500 font-semibold">Tenant Profile</div>
             <div className="mt-3 flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#10B981]/10 flex items-center justify-center"><Users className="w-5 h-5 text-[#10B981]" /></div>
+              <div className="w-10 h-10 rounded-lg bg-[#3FB36F]/10 flex items-center justify-center"><Users className="w-5 h-5 text-[#3FB36F]" /></div>
               <div>
                 <div className="font-semibold text-[#0A2540]">{o.tenant}</div>
                 <div className="text-xs text-slate-500 mt-0.5">Lease verified · CPI-linked escalations</div>

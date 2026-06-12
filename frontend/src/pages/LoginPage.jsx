@@ -31,7 +31,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 pv-grid-overlay opacity-60" />
         <div className="relative h-full flex flex-col justify-between p-12 text-white">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#10B981]/15 flex items-center justify-center"><Building2 className="w-5 h-5 text-[#10B981]" /></div>
+            <div className="w-10 h-10 rounded-xl bg-[#3FB36F]/15 flex items-center justify-center"><Building2 className="w-5 h-5 text-[#3FB36F]" /></div>
             <div className="font-['Cabinet_Grotesk'] font-extrabold text-lg">Property Verse</div>
           </div>
           <div>
@@ -47,10 +47,10 @@ export default function LoginPage() {
       <div className="flex items-center justify-center p-8 md:p-16 bg-white">
         <div className="w-full max-w-md">
           <Link to="/" className="inline-flex items-center gap-2.5 lg:hidden mb-8">
-            <div className="w-9 h-9 rounded-xl bg-[#0A2540] flex items-center justify-center"><Building2 className="w-4 h-4 text-[#10B981]" /></div>
+            <div className="w-9 h-9 rounded-xl bg-[#0A2540] flex items-center justify-center"><Building2 className="w-4 h-4 text-[#3FB36F]" /></div>
             <span className="font-['Cabinet_Grotesk'] font-extrabold text-[#0A2540]">Property Verse</span>
           </Link>
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Sign In</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Sign In</div>
           <h1 className="font-['Cabinet_Grotesk'] text-3xl md:text-4xl font-extrabold text-[#0A2540] mt-3 tracking-tighter">Welcome back.</h1>
           <p className="text-slate-600 mt-3">Access your investor dashboard.</p>
 
@@ -80,14 +80,14 @@ export default function LoginPage() {
             <button
               data-testid="login-submit-btn"
               disabled={loading}
-              className="w-full px-6 py-3.5 rounded-full bg-[#10B981] text-white font-semibold hover:bg-[#059669] transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60"
+              className="w-full px-6 py-3.5 rounded-full bg-[#3FB36F] text-white font-semibold hover:bg-[#1E63D5] transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60"
             >
               {loading ? "Signing in…" : "Sign In"} <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
           <div className="mt-6 text-sm text-slate-600">
-            New to Property Verse? <Link to="/signup" data-testid="login-go-signup" className="font-semibold text-[#0A2540] hover:text-[#10B981]">Open an account</Link>
+            New to Property Verse? <Link to="/signup" data-testid="login-go-signup" className="font-semibold text-[#0A2540] hover:text-[#3FB36F]">Open an account</Link>
           </div>
           <div className="mt-8 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-500 leading-relaxed">
             <div className="flex items-center gap-1.5 font-semibold text-[#0A2540] mb-1"><Lock className="w-3.5 h-3.5" /> Demo credentials</div>

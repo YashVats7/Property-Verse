@@ -17,9 +17,11 @@ ADMIN_EMAIL = "admin@propertyverse.in"
 ADMIN_PASSWORD = "PropVerseAdmin2025!"
 
 SAMPLE_IDS = [
-    "opp-bkc-skyline", "opp-orr-prism", "opp-cyberhub-arc", "opp-mind-hyd",
-    "opp-pune-axis", "opp-chen-marina", "opp-bom-meridian", "opp-leverage-alpha",
+    "opp-blr-grade-a", "opp-pune-premium", "opp-hyd-tower", "opp-ncr-business-park",
+    "opp-bkc-skyline", "opp-chen-marina", "opp-orr-prism", "opp-leverage-alpha",
 ]
+
+REQUIRED_FIELDS = ["leverage_available", "asset_value_cr", "target_irr_range", "risk_score"]
 
 
 # ---------- Fixtures ----------
@@ -56,13 +58,25 @@ def test_list_opportunities(client):
     assert ids == set(SAMPLE_IDS)
     for o in data["items"]:
         assert "name" in o and "image" in o and "target_irr" in o
+        for f in REQUIRED_FIELDS:
+            assert f in o, f"Missing field {f} in {o['id']}"
+
+
+def test_opportunity_detail_for_all_ids(client):
+    for oid in SAMPLE_IDS:
+        r = client.get(f"{API}/opportunities/{oid}")
+        assert r.status_code == 200, f"{oid} returned {r.status_code}"
+        d = r.json()
+        assert d["id"] == oid
+        for f in REQUIRED_FIELDS:
+            assert f in d
 
 
 def test_list_opportunities_filter_city(client):
     r = client.get(f"{API}/opportunities", params={"city": "Mumbai"})
     assert r.status_code == 200
     data = r.json()
-    assert data["total"] >= 2
+    assert data["total"] >= 1
     for o in data["items"]:
         assert "mumbai" in o["location"].lower()
 
@@ -72,8 +86,27 @@ def test_get_opportunity_detail(client):
     assert r.status_code == 200
     data = r.json()
     assert data["id"] == "opp-bkc-skyline"
-    assert data["name"] == "BKC Skyline Towers"
     assert data["target_irr"] > 0
+
+
+# ---------- Logout idempotency ----------
+def test_logout_idempotent_no_auth(client):
+    """Logout should work even without auth cookies."""
+    s = requests.Session()
+    r = s.post(f"{API}/auth/logout")
+    assert r.status_code == 200
+    assert r.json().get("ok") is True
+
+
+# ---------- Demo investor watchlist migration ----------
+def test_demo_watchlist_contains_valid_new_ids(demo_session):
+    r = demo_session.get(f"{API}/dashboard")
+    assert r.status_code == 200
+    data = r.json()
+    valid_ids = set(SAMPLE_IDS)
+    wl_ids = {o["id"] for o in data["watchlist"]}
+    assert len(wl_ids) >= 1, "Demo watchlist should not be empty after migration"
+    assert wl_ids.issubset(valid_ids), f"Watchlist contains invalid IDs: {wl_ids - valid_ids}"
 
 
 def test_get_opportunity_not_found(client):

@@ -16,7 +16,7 @@ export default function AboutPage() {
       <section className="pv-hero-gradient pv-grain text-white relative overflow-hidden">
         <div className="absolute inset-0 pv-grid-overlay opacity-50" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 pt-24 pb-20">
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">About</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">About</div>
           <h1 className="font-['Cabinet_Grotesk'] text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter max-w-4xl">
             Building India's infrastructure for <span className="pv-text-gradient">alternative real estate investing.</span>
           </h1>
@@ -29,7 +29,7 @@ export default function AboutPage() {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2">
-            <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Our Mission</div>
+            <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Our Mission</div>
             <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-4xl font-extrabold text-[#0A2540] mt-3 tracking-tighter">
               Real estate investing, upgraded for the modern investor.
             </h2>
@@ -41,7 +41,7 @@ export default function AboutPage() {
                 We are preparing to launch what we believe will be <strong className="text-[#0A2540]">India's first leverage-backed fractional real estate investment product</strong> — focused on A-grade pre-leased commercial real estate. This product combines investor equity with structured debt participation from banks, NBFCs, or institutional lenders.
               </p>
               <p>
-                The result: investors may participate in high-quality commercial assets while targeting <strong className="text-[#10B981]">enhanced projected returns of up to 17% IRR</strong>, driven by rental income, capital appreciation, and structured leverage.
+                The result: investors may participate in high-quality commercial assets while targeting <strong className="text-[#3FB36F]">enhanced projected returns of up to 17% IRR</strong>, driven by rental income, capital appreciation, and structured leverage.
               </p>
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function AboutPage() {
               { i: Layers, k: "20+ years", v: "Combined team & advisor experience" },
             ].map((s) => (
               <div key={s.k} className="pv-card p-6">
-                <s.i className="w-5 h-5 text-[#10B981]" />
+                <s.i className="w-5 h-5 text-[#3FB36F]" />
                 <div className="pv-num text-3xl font-extrabold text-[#0A2540] mt-3">{s.k}</div>
                 <div className="text-sm text-slate-600 mt-1">{s.v}</div>
               </div>
@@ -64,13 +64,13 @@ export default function AboutPage() {
 
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Founder</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Founder</div>
           <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-3 tracking-tighter">Led by Yash Vats.</h2>
 
           <div className="mt-12 grid lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1 pv-card p-8">
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#0A2540] to-[#0F3860] flex items-center justify-center">
-                <span className="font-['Cabinet_Grotesk'] text-2xl font-extrabold text-[#10B981]">YV</span>
+                <span className="font-['Cabinet_Grotesk'] text-2xl font-extrabold text-[#3FB36F]">YV</span>
               </div>
               <div className="mt-5 font-['Cabinet_Grotesk'] text-2xl font-extrabold text-[#0A2540]">Yash Vats</div>
               <div className="text-sm text-slate-600 mt-1">Founder, Property Verse</div>
@@ -101,7 +101,7 @@ export default function AboutPage() {
           </h2>
           <p className="text-slate-600 mt-5">For investors, lenders, real estate operators, and product partners.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/signup" data-testid="about-cta-signup" className="px-7 py-3.5 rounded-full bg-[#10B981] text-white font-semibold hover:bg-[#059669] transition-colors inline-flex items-center gap-2">
+            <Link to="/signup" data-testid="about-cta-signup" className="px-7 py-3.5 rounded-full bg-[#3FB36F] text-white font-semibold hover:bg-[#1E63D5] transition-colors inline-flex items-center gap-2">
               Join Investor Waitlist <ArrowRight className="w-4 h-4" />
             </Link>
             <Link to="/partners" data-testid="about-cta-partners" className="px-7 py-3.5 rounded-full border border-[#0A2540] text-[#0A2540] font-semibold hover:bg-[#0A2540] hover:text-white transition-colors">

@@ -28,8 +28,8 @@ function PartnerForm({ kind = "partner", testIdPrefix }) {
 
   if (done) {
     return (
-      <div data-testid={`${testIdPrefix}-success`} className="rounded-2xl border border-[#10B981]/30 bg-[#10B981]/5 p-8 text-center">
-        <CheckCircle2 className="w-12 h-12 text-[#10B981] mx-auto" />
+      <div data-testid={`${testIdPrefix}-success`} className="rounded-2xl border border-[#3FB36F]/30 bg-[#3FB36F]/5 p-8 text-center">
+        <CheckCircle2 className="w-12 h-12 text-[#3FB36F] mx-auto" />
         <div className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540] mt-4">Request received.</div>
         <p className="text-slate-600 mt-2">Our partnerships team will reach out within 48 hours.</p>
       </div>
@@ -53,7 +53,7 @@ function PartnerForm({ kind = "partner", testIdPrefix }) {
         <option value="other">Other</option>
       </select>
       <textarea data-testid={`${testIdPrefix}-input-message`} placeholder="Tell us how you'd like to partner" rows="4" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />
-      <button data-testid={`${testIdPrefix}-submit-btn`} type="submit" disabled={loading} className="px-7 py-3.5 rounded-full bg-[#10B981] text-white font-semibold hover:bg-[#059669] transition-colors inline-flex items-center gap-2 disabled:opacity-60">
+      <button data-testid={`${testIdPrefix}-submit-btn`} type="submit" disabled={loading} className="px-7 py-3.5 rounded-full bg-[#3FB36F] text-white font-semibold hover:bg-[#1E63D5] transition-colors inline-flex items-center gap-2 disabled:opacity-60">
         {loading ? "Submitting…" : "Submit Request"} <ArrowRight className="w-4 h-4" />
       </button>
     </form>
@@ -66,7 +66,7 @@ export default function PartnersPage() {
       <section className="pv-hero-gradient pv-grain text-white relative overflow-hidden">
         <div className="absolute inset-0 pv-grid-overlay opacity-50" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 pt-24 pb-20">
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Partners</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Partners</div>
           <h1 className="font-['Cabinet_Grotesk'] text-4xl md:text-6xl font-extrabold mt-4 tracking-tighter max-w-4xl">
             Building <span className="pv-text-gradient">together</span> across the real estate investment stack.
           </h1>
@@ -79,7 +79,7 @@ export default function PartnersPage() {
       {/* Ecosystem */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Ecosystem Network</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Ecosystem Network</div>
           <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-4xl font-extrabold text-[#0A2540] mt-3 tracking-tighter max-w-3xl">
             Fractional platforms we plan to aggregate.
           </h2>
@@ -102,7 +102,7 @@ export default function PartnersPage() {
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12">
           <div>
-            <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Partner With Us</div>
+            <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Partner With Us</div>
             <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-4xl font-extrabold text-[#0A2540] mt-3 tracking-tighter">
               For asset owners, FOPs, data partners, and wealth managers.
             </h2>
@@ -118,7 +118,7 @@ export default function PartnersPage() {
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid lg:grid-cols-2 gap-12">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">
+            <div className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">
               <Banknote className="w-3.5 h-3.5" /> Lender / Bank
             </div>
             <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-4xl font-extrabold text-[#0A2540] mt-3 tracking-tighter">

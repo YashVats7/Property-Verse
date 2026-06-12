@@ -4,9 +4,9 @@ import WaitlistForm from "../components/WaitlistForm";
 
 function Stat({ label, value, accent = false }) {
   return (
-    <div className={`rounded-xl p-4 ${accent ? "bg-[#10B981]/10 border border-[#10B981]/30" : "bg-slate-50 border border-slate-200"}`}>
+    <div className={`rounded-xl p-4 ${accent ? "bg-[#3FB36F]/10 border border-[#3FB36F]/30" : "bg-slate-50 border border-slate-200"}`}>
       <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">{label}</div>
-      <div className={`pv-num text-xl font-bold mt-1 ${accent ? "text-[#10B981]" : "text-[#0A2540]"}`}>{value}</div>
+      <div className={`pv-num text-xl font-bold mt-1 ${accent ? "text-[#3FB36F]" : "text-[#0A2540]"}`}>{value}</div>
     </div>
   );
 }
@@ -65,7 +65,7 @@ export default function LeveragePage() {
         <div className="absolute inset-0 pv-grid-overlay opacity-50" />
         <div className="relative max-w-7xl mx-auto px-6 md:px-12 pt-24 pb-20 text-white">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full pv-glass-dark text-white/90 text-xs">
-            <Banknote className="w-3.5 h-3.5 text-[#10B981]" /> LFA · Coming Soon
+            <Banknote className="w-3.5 h-3.5 text-[#3FB36F]" /> LFA · Coming Soon
           </div>
           <h1 className="font-['Cabinet_Grotesk'] text-4xl md:text-6xl font-extrabold mt-6 tracking-tighter max-w-4xl">
             Introducing <span className="pv-text-gradient">Leveraged Fractional Assets.</span>
@@ -88,7 +88,7 @@ export default function LeveragePage() {
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div>
-              <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Side by Side</div>
+              <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Side by Side</div>
               <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-4 tracking-tighter">
                 Same asset. Half the equity.
               </h2>
@@ -111,9 +111,9 @@ export default function LeveragePage() {
                 <div className="mt-5 text-sm font-semibold text-[#0A2540]">₹40 L exposure</div>
                 <div className="text-xs text-slate-500 mt-1">8–9% rental yield</div>
               </div>
-              <div className="rounded-2xl p-6 bg-gradient-to-br from-[#0A2540] to-[#0F3860] text-white border border-[#10B981]/30">
-                <div className="text-[10px] uppercase tracking-widest text-[#10B981] font-semibold">Leveraged Fractional</div>
-                <div className="pv-num text-3xl font-extrabold mt-3 text-[#10B981]">₹20 L</div>
+              <div className="rounded-2xl p-6 bg-gradient-to-br from-[#0A2540] to-[#0F3860] text-white border border-[#3FB36F]/30">
+                <div className="text-[10px] uppercase tracking-widest text-[#3FB36F] font-semibold">Leveraged Fractional</div>
+                <div className="pv-num text-3xl font-extrabold mt-3 text-[#3FB36F]">₹20 L</div>
                 <div className="text-xs text-slate-300 mt-1">Equity + ₹20L debt</div>
                 <div className="mt-5 text-sm font-semibold">₹40 L exposure</div>
                 <div className="text-xs text-slate-300 mt-1">Enhanced target IRR</div>
@@ -130,7 +130,7 @@ export default function LeveragePage() {
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
-            <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">How LFA Works</div>
+            <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">How LFA Works</div>
             <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-4 tracking-tighter">
               Five steps. One structured asset.
             </h2>
@@ -138,7 +138,7 @@ export default function LeveragePage() {
           <div className="mt-12 grid md:grid-cols-5 gap-4">
             {STEPS.map((s, i) => (
               <div key={s.t} className="pv-card p-5 relative">
-                <div className="pv-num text-3xl font-bold text-[#10B981]/30">0{i + 1}</div>
+                <div className="pv-num text-3xl font-bold text-[#3FB36F]/30">0{i + 1}</div>
                 <div className="font-semibold text-[#0A2540] mt-2 text-sm">{s.t}</div>
                 <div className="text-xs text-slate-500 mt-2 leading-relaxed">{s.d}</div>
               </div>
@@ -152,9 +152,9 @@ export default function LeveragePage() {
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="grid lg:grid-cols-2 gap-10">
             <div>
-              <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Illustrative Calculator</div>
+              <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Illustrative Calculator</div>
               <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-4 tracking-tighter">
-                Model your <span className="text-[#10B981]">LFA</span> exposure.
+                Model your <span className="text-[#3FB36F]">LFA</span> exposure.
               </h2>
               <p className="text-slate-600 mt-4">Move the sliders to see how equity, debt, yield, and exit dynamics affect your projected returns.</p>
 
@@ -180,7 +180,7 @@ export default function LeveragePage() {
                       step={f.step}
                       value={calc[f.k]}
                       onChange={(e) => setCalc({ ...calc, [f.k]: parseFloat(e.target.value) })}
-                      className="w-full accent-[#10B981]"
+                      className="w-full accent-[#3FB36F]"
                     />
                   </div>
                 ))}
@@ -189,7 +189,7 @@ export default function LeveragePage() {
 
             <div className="pv-card p-8 lg:sticky lg:top-24 h-fit">
               <div className="flex items-center gap-2">
-                <Calculator className="w-5 h-5 text-[#10B981]" />
+                <Calculator className="w-5 h-5 text-[#3FB36F]" />
                 <div className="text-xs uppercase tracking-widest text-slate-500 font-semibold">Estimated Outputs</div>
               </div>
               <div className="mt-5 grid grid-cols-2 gap-3">
@@ -203,7 +203,7 @@ export default function LeveragePage() {
                 <Stat label="Total Investor Return" value={fmt(m.totalReturn)} />
               </div>
               <div className="mt-6 rounded-2xl bg-[#0A2540] text-white p-6">
-                <div className="text-[10px] uppercase tracking-widest text-[#10B981] font-semibold">Effective IRR (illustrative)</div>
+                <div className="text-[10px] uppercase tracking-widest text-[#3FB36F] font-semibold">Effective IRR (illustrative)</div>
                 <div className="pv-num text-5xl font-extrabold mt-2">{isFinite(m.irr) ? m.irr.toFixed(1) : "—"}<span className="text-2xl">%</span></div>
                 <div className="text-xs text-slate-400 mt-2">Pre-tax. Net of debt cost. Excludes platform fees, taxes, and one-time costs.</div>
               </div>
@@ -219,7 +219,7 @@ export default function LeveragePage() {
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-3xl">
-            <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Why LFA</div>
+            <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Why LFA</div>
             <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-4 tracking-tighter">
               Eight reasons to consider Leveraged Fractional Assets.
             </h2>
@@ -236,7 +236,7 @@ export default function LeveragePage() {
               "Asset-backed financing logic",
             ].map((f) => (
               <div key={f} className="pv-card p-5">
-                <CheckCircle2 className="w-5 h-5 text-[#10B981]" />
+                <CheckCircle2 className="w-5 h-5 text-[#3FB36F]" />
                 <div className="mt-3 font-semibold text-[#0A2540] text-sm">{f}</div>
               </div>
             ))}
@@ -247,7 +247,7 @@ export default function LeveragePage() {
       {/* Comparison table */}
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
-          <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Where LFA Sits</div>
+          <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Where LFA Sits</div>
           <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-5xl font-extrabold text-[#0A2540] mt-4 tracking-tighter max-w-3xl">
             Compare across all real estate investment options.
           </h2>
@@ -256,7 +256,7 @@ export default function LeveragePage() {
               <thead className="bg-slate-50 border-b border-slate-200 text-left">
                 <tr>
                   {COMPARISON.headers.map((h, i) => (
-                    <th key={i} className={`px-5 py-4 font-semibold ${i === 4 ? "text-[#10B981]" : "text-[#0A2540]"} whitespace-nowrap`}>{h}</th>
+                    <th key={i} className={`px-5 py-4 font-semibold ${i === 4 ? "text-[#3FB36F]" : "text-[#0A2540]"} whitespace-nowrap`}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -264,7 +264,7 @@ export default function LeveragePage() {
                 {COMPARISON.rows.map((row, ri) => (
                   <tr key={ri} className="border-b border-slate-100 hover:bg-slate-50/60">
                     {row.map((cell, ci) => (
-                      <td key={ci} className={`px-5 py-4 ${ci === 0 ? "font-semibold text-[#0A2540]" : "text-slate-600"} ${ci === 4 ? "bg-[#10B981]/5" : ""}`}>{cell}</td>
+                      <td key={ci} className={`px-5 py-4 ${ci === 0 ? "font-semibold text-[#0A2540]" : "text-slate-600"} ${ci === 4 ? "bg-[#3FB36F]/5" : ""}`}>{cell}</td>
                     ))}
                   </tr>
                 ))}
@@ -278,9 +278,9 @@ export default function LeveragePage() {
       <section className="py-24 bg-slate-50">
         <div className="max-w-3xl mx-auto px-6 md:px-12">
           <div className="rounded-3xl bg-[#0A2540] text-white p-10 md:p-12 relative overflow-hidden">
-            <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#10B981]/30 blur-3xl" />
+            <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#3FB36F]/30 blur-3xl" />
             <div className="relative">
-              <div className="text-xs uppercase tracking-[0.25em] text-[#10B981] font-semibold">Early Access</div>
+              <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Early Access</div>
               <h2 className="font-['Cabinet_Grotesk'] text-3xl md:text-4xl font-extrabold mt-3 tracking-tighter">Get early access to LFA.</h2>
               <p className="text-slate-300 mt-3">Be first in line as we onboard select investors for our flagship Leveraged Fractional Asset launch.</p>
               <div className="mt-8">
