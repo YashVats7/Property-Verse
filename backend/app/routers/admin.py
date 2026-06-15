@@ -27,6 +27,7 @@ def _serialize(doc):
     if "_id" in doc:
         doc["id_mongo"] = str(doc["_id"])
         doc.pop("_id", None)
+    doc.setdefault("id", doc.get("id_mongo"))
     doc.pop("password_hash", None)
     return doc
 

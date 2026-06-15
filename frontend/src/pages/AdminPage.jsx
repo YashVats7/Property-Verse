@@ -191,7 +191,7 @@ function StatsEditor() {
   return (
     <div className="pv-card p-7">
       <div className="font-['Cabinet_Grotesk'] text-xl font-bold text-[#0A2540]">Platform stats</div>
-      <p className="text-sm text-slate-600 mt-1">Edit the 5 KPI numbers visible on the homepage.</p>
+      <p className="text-sm text-slate-600 mt-1">Edit the 6 KPI numbers visible on the homepage.</p>
       <div className="mt-6 grid md:grid-cols-2 gap-4">
         {fields.map((f) => (
           <div key={f.k}>
