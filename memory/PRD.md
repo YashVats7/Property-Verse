@@ -143,3 +143,20 @@ User feedback: v4 floaters (random tickers, matrix digits, particle dots) felt l
 - LeveragePage hero: CityRentFlow occupying the bottom half
 - LeveragePage comparison section: LeverageStack (replaced static leverage_visual image)
 - Marketplace page untouched per user
+
+## v6 — Admin Content & Asset Management (Dec 12, 2025)
+**Backend**:
+- Migrated `SAMPLE_OPPORTUNITIES` from Python list → MongoDB `opportunities` collection (seeded on first run; persistent across restarts)
+- New `content` collection storing `stats`, `hero`, `about`, `personas` as upsertable key→value JSON docs (with defaults in `/app/backend/app/defaults.py`)
+- New admin endpoints: `GET/POST/PUT/DELETE /api/admin/opportunities[/{id}]`, `POST /api/admin/opportunities/reset`, `GET/PUT /api/admin/content/{key}`, `POST /api/admin/upload` (multipart, ≤6 MB, png/jpg/jpeg/webp/gif → `/app/frontend/public/uploads/{uuid}.ext`)
+- New public endpoint: `GET /api/content/{key}` (frontend reads dynamic copy live)
+- Public `/api/opportunities`, `/api/opportunities/{id}`, `/api/stats` now sourced from MongoDB (not hard-coded list)
+- Dashboard router now reads watchlist/recommended from `db.opportunities` instead of Python list
+
+**Frontend** — `/admin` page rebuilt with 9 tabs:
+- **Opportunities**: card grid + New / Edit / Delete / Reset-to-demos + modal form with all 17 fields (name, location, asset type, tenant, min investment, asset value Cr, target IRR + range, rental yield, lease term, occupancy, tenure, funded %, leverage toggle, risk score, tags, highlight) + image upload (POST /api/admin/upload) or paste-URL
+- **Stats**: 6 number inputs (AUM, investors, properties, avg IRR, cities, occupancy)
+- **Hero / About / Personas**: JSON editors with validation + live load from `/api/content/{key}`
+- **Waitlist / Partners / Strategy Calls / Users**: existing leads triage (search, CSV export, delete)
+
+**Verified end-to-end**: list/create/update/delete opportunity, edit stats, image upload, reset all working.

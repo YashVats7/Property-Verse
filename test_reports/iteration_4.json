@@ -1,0 +1,49 @@
+{
+  "summary": "Iteration-4 full-stack regression for Property Verse v6 (Mongo opportunities + content collection + admin CRUD + image upload). Backend: 48/49 pytest pass against public REACT_APP_BACKEND_URL — 18 NEW v6 tests (/app/backend/tests/test_admin_v6.py) all green covering: public /api/content/{hero,about,personas,stats} + 404 unknown, admin auth/role guards (401/403) on opps + content + upload, admin opp CRUD (create→GET→update→GET→delete→404), reset to 8 demos with watchlist preservation check, content stats round-trip with /api/stats reflection, content hero/about/personas round-trip, multipart PNG upload (returns /uploads/<uuid>.png — HEAD 200 on frontend static), bad-extension rejection (400). The 1 failing test (`test_admin_users_list_no_password_hash`) is a CARRY-OVER pre-existing bug, not v6: users created via /api/auth/register have no top-level `id` field — only `_id` (serialized as `id_mongo`) — admin serializer keeps `id_mongo` for the leads-table key but never sets `id`. Frontend: admin login → /admin loaded → all 9 tabs (admin-tab-{opportunities,stats,hero,about,personas,waitlist,partners,strategy-calls,users}) present and switchable; Opportunities tab shows exactly 8 cards with 8 opp-edit-{id} buttons; opp-new-btn opens modal with opp-save-btn + opp-image-upload visible; opp-edit-opp-blr-grade-a opens prefilled modal (name='Grade-A Office Park'); all 6 stats-input-* fields + stats-save-btn render; Save Stats triggers 'Stats saved' toast; content-{hero|about|personas}-editor textareas + content-{key}-save buttons render. Demo state restored after tests: POST /api/admin/opportunities/reset → 8 docs; PUT /api/admin/content/stats → demo defaults (aum=1240, investors=18500, properties=47, avg_irr=15.8, cities=9, occupancy=98); demo investor /api/dashboard watchlist = ['opp-blr-grade-a','opp-leverage-alpha'] (valid).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/admin/users (and any user-doc serialization)", "issue": "Registered users (via /api/auth/register) have NO top-level `id` field — _serialize only maps _id → id_mongo. Frontend leads-table key fallback works (id || id_mongo) but assertion 'id in user doc' fails. Consider either (a) on register, set `id: str(uuid4())` alongside _id, or (b) in _serialize, always populate `id = id_mongo` when missing. Pre-existing — not a v6 regression."},
+      {"endpoint": "/api/admin/upload", "issue": "Investor (non-admin) POST returns 403 OR 422 depending on order of dependency vs form parsing; both acceptable but inconsistent. Optional: enforce auth check before form parse via require_admin order."},
+      {"endpoint": "CORS allow_origins (carry-over)", "issue": "Hard-coded to single FRONTEND_URL env."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "AdminPage / StatsEditor", "issues": ["Copy says 'Edit the 5 KPI numbers' but the form actually renders 6 fields (aum_inr_cr, investors, properties, avg_irr, cities, occupancy_pct). Update label text to '6 KPI numbers'."]},
+      {"screen": "AdminPage modal (OpportunityForm)", "issues": ["Modal backdrop click closes the form without confirmation — if user has unsaved edits they are lost silently. Consider dirty-check / confirm on close.", "Missing data-testid on Cancel button inside modal — only opp-save-btn has one."]},
+      {"screen": "Recharts (carry-over)", "issues": ["width(-1)/height(-1) Recharts warnings on first paint, charts still render correctly."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_admin_v6.py",
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix /api/auth/register to persist a top-level `id` field on the user doc (or update _serialize to backfill id from id_mongo) — currently test_admin_users_list_no_password_hash fails because newly registered users have no `id`.",
+    "(Optional) Update StatsEditor copy from '5 KPI numbers' to '6 KPI numbers' to match the 6 inputs.",
+    "(Optional) Add data-testid to Cancel button inside OpportunityForm modal and confirm-before-close on dirty form.",
+    "(Optional, carry-over from iter_3) DELETE /api/admin/leads/{collection}/{lead_id} now returns 404 properly (verified) — previous iter_3 issue resolved by current `if res.deleted_count == 0: raise 404`."
+  ],
+  "critical_code_review_comments": [
+    "admin.py /admin/upload: writes user-supplied bytes directly to /app/frontend/public/uploads — extension validated but MIME/magic bytes not. A renamed .exe → .png would still pass. 6MB cap acts as DOS guard. Acceptable for MVP but flag for prod hardening.",
+    "admin.py update_opp uses model_dump(exclude_unset=True) on a Pydantic model with all-default fields — POSTing partial JSON won't actually exclude defaults because Pydantic sees defaults as 'set' for missing fields when using BaseModel without Field(default=...). Currently OK because frontend always sends full doc.",
+    "opportunities.py /content/{key}: no caching headers. Hero/about/personas are read on EVERY HomePage render via the React effect — consider 30s ETag or stale-while-revalidate on the frontend.",
+    "seed.py force-updates demo investor watchlist on EVERY restart — admin actions on investor's watchlist via UI would be lost on container restart. Acceptable for demo; flag for prod.",
+    "dashboard.py uses ObjectId(user['id']) — if user comes from auth path that put id as id_mongo or uuid string, this can throw 500. Verify get_current_user always returns the stringified _id.",
+    "AdminPage.jsx OpportunityForm component is defined inside parent's render — re-creates the F() inline-component on every keystroke, may cause input focus loss on long forms (NOT observed during testing but a latent issue). Consider lifting F out of OpportunityForm."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_admin_v6.py"
+  ],
+  "success_rate": {"backend": "98% (48/49)", "frontend": "100%"},
+  "test_credentials": "Admin admin@propertyverse.in / PropVerseAdmin2025! and demo investor investor@propertyverse.in / Investor2025! — both verified end-to-end (login, /api/auth/me, admin CRUD, dashboard watchlist).",
+  "seed_data_creation": "v6 test created + deleted 1 TEST_-prefixed opportunity (full CRUD round-trip, cleaned). 2 PNG files uploaded to /app/frontend/public/uploads/ (one valid + one rejected). Stats temporarily mutated then restored to demo defaults. Opportunities collection reset to 8 demos at end. Demo investor watchlist verified intact: ['opp-blr-grade-a','opp-leverage-alpha'].",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "v6 baseline: 48/49 pytest passing on public URL. Test files: /app/backend/tests/backend_test.py (iter_3 carry-over, 31 tests) + /app/backend/tests/test_admin_v6.py (18 v6-specific tests). The ONE failure (test_admin_users_list_no_password_hash) is a pre-existing user-id-field bug — not a v6 regression. Demo state at end of run: 8 opportunities (resetted), stats=demo-defaults, demo investor watchlist=['opp-blr-grade-a','opp-leverage-alpha']. Static /uploads/* served via React dev server (HEAD 200 verified). Admin frontend uses data-testid extensively — see AdminPage.jsx. Opportunity modal does NOT have data-testid on Cancel button. F() inline-component pattern in OpportunityForm may cause input-focus drops on long edits.",
+  "rca_of_the_issue": "Single failure root cause: User docs inserted by /api/auth/register only get MongoDB _id (no separate `id` field). _serialize() in admin.py maps _id → id_mongo and pops _id, but never sets a top-level `id`. Repro: register a new user → GET /api/admin/users → response has `id_mongo` but no `id`. Fix options: (a) in auth.register, generate `id = str(uuid.uuid4())` and store alongside _id (matches opportunities pattern), OR (b) in admin._serialize, add `doc.setdefault('id', doc.get('id_mongo'))` before return. Option (a) is preferred for consistency with opportunities/leads collections."
+}
