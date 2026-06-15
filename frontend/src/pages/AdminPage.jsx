@@ -363,16 +363,26 @@ function OpportunityForm({ initial, onClose, onSaved }) {
     finally { setSaving(false); }
   };
 
-  const F = ({ k, l, type = "text", step }) => (
-    <div>
-      <label className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">{l}</label>
-      <input
-        type={type} step={step} value={f[k] ?? ""}
-        onChange={(e) => setF({ ...f, [k]: type === "number" ? parseFloat(e.target.value) || 0 : e.target.value })}
-        className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 focus:border-[#0A2540] focus:outline-none text-sm"
-      />
-    </div>
-  );
+  const setField = (k, v) => setF((prev) => ({ ...prev, [k]: v }));
+
+  const TextField = ({ k, l, type = "text", step }) => null; // (unused) — replaced by inline JSX below
+
+  const fieldDefs = [
+    { k: "name", l: "Asset Name" },
+    { k: "location", l: "Location" },
+    { k: "asset_type", l: "Asset Type" },
+    { k: "tenant", l: "Tenant" },
+    { k: "min_investment", l: "Min Investment (₹)", type: "number" },
+    { k: "asset_value_cr", l: "Asset Value (₹ Cr)", type: "number" },
+    { k: "target_irr", l: "Target IRR (%)", type: "number", step: "0.1" },
+    { k: "target_irr_range", l: "Target IRR Range (e.g. 14-16%)" },
+    { k: "rental_yield", l: "Rental Yield (%)", type: "number", step: "0.1" },
+    { k: "lease_term_years", l: "Lease Term (years)", type: "number" },
+    { k: "tenure_years", l: "Investment Tenure (years)", type: "number" },
+    { k: "occupancy", l: "Occupancy %", type: "number" },
+    { k: "funded_pct", l: "Funded %", type: "number" },
+    { k: "risk_score", l: "Risk Score /100", type: "number" },
+  ];
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm overflow-y-auto" onClick={onClose}>
@@ -380,42 +390,43 @@ function OpportunityForm({ initial, onClose, onSaved }) {
         <div className="bg-white rounded-3xl max-w-3xl w-full my-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-between p-6 border-b border-slate-100">
             <div className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540]">{isNew ? "New Opportunity" : `Edit · ${initial.name}`}</div>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
+            <button onClick={onClose} data-testid="opp-form-cancel-x" className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
           </div>
           <div className="p-6 grid md:grid-cols-2 gap-4">
-            <F k="name" l="Asset Name" />
-            <F k="location" l="Location" />
-            <F k="asset_type" l="Asset Type" />
-            <F k="tenant" l="Tenant" />
-            <F k="min_investment" l="Min Investment (₹)" type="number" />
-            <F k="asset_value_cr" l="Asset Value (₹ Cr)" type="number" />
-            <F k="target_irr" l="Target IRR (%)" type="number" step="0.1" />
-            <F k="target_irr_range" l="Target IRR Range (e.g. 14-16%)" />
-            <F k="rental_yield" l="Rental Yield (%)" type="number" step="0.1" />
-            <F k="lease_term_years" l="Lease Term (years)" type="number" />
-            <F k="tenure_years" l="Investment Tenure (years)" type="number" />
-            <F k="occupancy" l="Occupancy %" type="number" />
-            <F k="funded_pct" l="Funded %" type="number" />
-            <F k="risk_score" l="Risk Score /100" type="number" />
+            {fieldDefs.map((fd) => (
+              <div key={fd.k}>
+                <label className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">{fd.l}</label>
+                <input
+                  data-testid={`opp-form-${fd.k}`}
+                  type={fd.type || "text"}
+                  step={fd.step}
+                  value={f[fd.k] ?? ""}
+                  onChange={(e) => setField(fd.k, fd.type === "number" ? (e.target.value === "" ? "" : parseFloat(e.target.value) || 0) : e.target.value)}
+                  className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 focus:border-[#0A2540] focus:outline-none text-sm"
+                />
+              </div>
+            ))}
             <div>
               <label className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Leverage Available</label>
               <label className="mt-2 flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={!!f.leverage_available} onChange={(e) => setF({ ...f, leverage_available: e.target.checked })} className="w-4 h-4 accent-[#3FB36F]" />
+                <input data-testid="opp-form-leverage" type="checkbox" checked={!!f.leverage_available} onChange={(e) => setField("leverage_available", e.target.checked)} className="w-4 h-4 accent-[#3FB36F]" />
                 <span className="text-sm">Show leverage badge</span>
               </label>
             </div>
             <div className="md:col-span-2">
               <label className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Tags (comma-separated)</label>
               <input
+                data-testid="opp-form-tags"
                 value={(f.tags || []).join(", ")}
-                onChange={(e) => setF({ ...f, tags: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })}
+                onChange={(e) => setField("tags", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))}
                 className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 focus:border-[#0A2540] focus:outline-none text-sm"
               />
             </div>
             <div className="md:col-span-2">
               <label className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Highlight</label>
               <textarea
-                value={f.highlight || ""} onChange={(e) => setF({ ...f, highlight: e.target.value })} rows={2}
+                data-testid="opp-form-highlight"
+                value={f.highlight || ""} onChange={(e) => setField("highlight", e.target.value)} rows={2}
                 className="mt-1 w-full px-3 py-2.5 rounded-lg border border-slate-200 focus:border-[#0A2540] focus:outline-none text-sm"
               />
             </div>
@@ -427,17 +438,18 @@ function OpportunityForm({ initial, onClose, onSaved }) {
                   <Upload className="w-4 h-4" /> {uploading ? "Uploading…" : "Upload Photo"}
                   <input type="file" accept="image/*" className="hidden" data-testid="opp-image-upload" onChange={(e) => upload(e.target.files?.[0])} />
                 </label>
-                {f.image && <button onClick={() => setF({ ...f, image: "" })} className="text-xs text-rose-500">Remove</button>}
+                {f.image && <button onClick={() => setField("image", "")} className="text-xs text-rose-500">Remove</button>}
               </div>
               <input
+                data-testid="opp-form-image-url"
                 placeholder="Or paste image URL"
-                value={f.image || ""} onChange={(e) => setF({ ...f, image: e.target.value })}
+                value={f.image || ""} onChange={(e) => setField("image", e.target.value)}
                 className="mt-3 w-full px-3 py-2 rounded-lg border border-slate-200 text-xs"
               />
             </div>
           </div>
           <div className="p-6 border-t border-slate-100 flex justify-end gap-3">
-            <button onClick={onClose} className="px-5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700">Cancel</button>
+            <button onClick={onClose} data-testid="opp-form-cancel" className="px-5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700">Cancel</button>
             <button onClick={save} disabled={saving} data-testid="opp-save-btn" className="px-6 py-2.5 rounded-xl bg-[#3FB36F] text-white text-sm font-semibold inline-flex items-center gap-2 disabled:opacity-60">
               <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Opportunity"}
             </button>

@@ -160,3 +160,22 @@ User feedback: v4 floaters (random tickers, matrix digits, particle dots) felt l
 - **Waitlist / Partners / Strategy Calls / Users**: existing leads triage (search, CSV export, delete)
 
 **Verified end-to-end**: list/create/update/delete opportunity, edit stats, image upload, reset all working.
+
+## v7 — Admin glitch fix + PDF gate + Marketplace hover skyline (Dec 12, 2025)
+
+**Admin glitch fix (root cause: input focus loss while typing)**:
+- The `OpportunityForm` defined an inline `F` component on every render → React treated each keystroke as a new component type and unmounted/remounted inputs, dropping focus
+- Replaced with `fieldDefs.map(...)` rendering stable inline JSX + a single `setField(k, v)` helper using functional state updates
+- Added data-testids: `opp-form-{key}`, `opp-form-tags`, `opp-form-highlight`, `opp-form-image-url`, `opp-form-leverage`, `opp-form-cancel`, `opp-form-cancel-x`
+
+**Per-opportunity PDF generator (email-gated)**:
+- Backend: new `/app/backend/app/routers/pdf.py` using `reportlab` 4.5.1
+- Endpoint: `POST /api/opportunities/{id}/pdf` body `{name, email, phone?}` → captures lead into `leads_pdf_downloads` + `leads_waitlist` (source=`pdf_download`) → returns one-page A4 PDF as streaming binary
+- PDF layout: navy header band with asset name & location, 6-tile KPI grid (asset value, target IRR, yield, min investment, tenure, occupancy), highlight box, tenant + lease line, blue leverage callout (when eligible), illustrative disclaimer footer with recipient name/email + date
+- Frontend: `PdfModal` on `OpportunityDetailPage` triggered by gradient "Download Asset Summary PDF" button (`opp-detail-download-pdf`); 3-field form (`pdf-input-name`, `pdf-input-email`, `pdf-input-phone`); on submit calls fetch with `credentials: include`, downloads blob, shows success state
+
+**Per-city hover skyline on marketplace cards**:
+- New `CitySkylineMini` component with 7 city-specific skyline signatures (Bengaluru, Mumbai, Hyderabad, Gurugram/NCR, Pune, Chennai + default)
+- Auto-picks city from `o.location` string
+- Animated: buildings rise from ground with staggered entrance + windows pulse green randomly + rent dots travel along the base
+- `OpportunityCard` now tracks hover state and shows the skyline overlay (navy backdrop + city pill label) over the asset photo on hover with AnimatePresence fade

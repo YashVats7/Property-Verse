@@ -1,11 +1,81 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { MapPin, ArrowLeft, Bookmark, Building2, Calendar, Users, TrendingUp, ShieldCheck } from "lucide-react";
-import api from "../lib/api";
+import { motion, AnimatePresence } from "framer-motion";
+import { MapPin, ArrowLeft, Bookmark, Building2, Calendar, Users, TrendingUp, ShieldCheck, FileDown, X, CheckCircle2 } from "lucide-react";
+import api, { formatApiError, API } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { inr } from "../lib/format";
 import { toast } from "sonner";
+
+function PdfModal({ opp, onClose }) {
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/opportunities/${opp.id}/pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(formatApiError(j.detail) || `HTTP ${res.status}`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `PropertyVerse-${opp.name.replace(/\s+/g, "_")}.pdf`; a.click();
+      URL.revokeObjectURL(url);
+      setDone(true);
+      toast.success("PDF downloaded");
+    } catch (err) {
+      toast.error(err.message || "PDF generation failed");
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6" onClick={onClose}>
+      <motion.div
+        initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-3xl max-w-md w-full p-7 relative" onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600" data-testid="pdf-modal-close"><X className="w-5 h-5" /></button>
+        {done ? (
+          <div className="text-center py-6" data-testid="pdf-modal-success">
+            <CheckCircle2 className="w-12 h-12 text-[#3FB36F] mx-auto" />
+            <div className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540] mt-4">PDF downloaded.</div>
+            <p className="text-slate-600 mt-2 text-sm">Our investor relations team will follow up shortly.</p>
+            <button onClick={onClose} className="mt-6 px-6 py-2.5 rounded-full bg-[#0A2540] text-white font-semibold text-sm">Close</button>
+          </div>
+        ) : (
+          <>
+            <div className="text-xs uppercase tracking-[0.25em] text-[#3FB36F] font-semibold">Asset Summary PDF</div>
+            <h2 className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540] mt-2">{opp.name}</h2>
+            <p className="text-slate-600 text-sm mt-2">One-page illustrative summary. Tell us where to send it.</p>
+            <form onSubmit={submit} data-testid="pdf-modal-form" className="mt-5 space-y-3">
+              <input data-testid="pdf-input-name" placeholder="Full name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />
+              <input data-testid="pdf-input-email" type="email" placeholder="Work email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />
+              <input data-testid="pdf-input-phone" placeholder="Phone (optional)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />
+              <button type="submit" disabled={loading} data-testid="pdf-submit-btn"
+                className="w-full px-6 py-3.5 rounded-full bg-gradient-to-r from-[#3FB36F] to-[#1E63D5] text-white font-semibold inline-flex items-center justify-center gap-2 disabled:opacity-60">
+                <FileDown className="w-4 h-4" /> {loading ? "Generating…" : "Download PDF"}
+              </button>
+              <p className="text-[10px] text-slate-400 leading-relaxed">By downloading you agree to be contacted by Property Verse investor relations. Illustrative only.</p>
+            </form>
+          </>
+        )}
+      </motion.div>
+    </div>
+  );
+}
 
 export default function OpportunityDetailPage() {
   const { id } = useParams();
@@ -13,6 +83,7 @@ export default function OpportunityDetailPage() {
   const [o, setO] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [pdfOpen, setPdfOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -139,6 +210,13 @@ export default function OpportunityDetailPage() {
             >
               Book a Strategy Call
             </Link>
+            <button
+              onClick={() => setPdfOpen(true)}
+              data-testid="opp-detail-download-pdf"
+              className="mt-3 w-full px-6 py-3.5 rounded-full bg-gradient-to-r from-[#3FB36F] to-[#1E63D5] text-white font-semibold inline-flex items-center justify-center gap-2 hover:shadow-[0_12px_40px_rgba(63,179,111,0.40)] transition-all"
+            >
+              <FileDown className="w-4 h-4" /> Download Asset Summary PDF
+            </button>
           </div>
 
           <div className="pv-card p-6">
@@ -153,6 +231,7 @@ export default function OpportunityDetailPage() {
           </div>
         </aside>
       </div>
+      <AnimatePresence>{pdfOpen && <PdfModal opp={o} onClose={() => setPdfOpen(false)} />}</AnimatePresence>
     </div>
   );
 }

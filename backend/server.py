@@ -20,6 +20,7 @@ from app.routers import opportunities as opps_router
 from app.routers import leads as leads_router
 from app.routers import dashboard as dashboard_router
 from app.routers import admin as admin_router
+from app.routers import pdf as pdf_router
 
 app = FastAPI(title="Property Verse API")
 api_router = APIRouter(prefix="/api")
@@ -35,6 +36,7 @@ api_router.include_router(opps_router.router)
 api_router.include_router(leads_router.router)
 api_router.include_router(dashboard_router.router)
 api_router.include_router(admin_router.router)
+api_router.include_router(pdf_router.router)
 
 app.include_router(api_router)
 
