@@ -193,6 +193,14 @@ User requested full security hardening before onboarding 8k clients. All 7 items
 7. **Admin audit log** (`audit_log` collection, all admin mutations recorded; new read-only "Audit Log" tab in AdminPage)
 Also: Mongo indexes on startup (users.email unique, refresh_tokens TTL, etc.). Note: testing agent fixed a corrupted WaitlistForm.jsx during this session (verified clean).
 
+## Code Quality Pass (June 2026)
+Applied review fixes, verified regression-free by testing agent (iteration_6.json, 69/69 effective):
+- Test credentials moved to env via new `tests/conftest.py` (loads backend .env)
+- `is True` literal comparisons → `== True` in tests (prod `is None` checks kept — correct usage)
+- `pdf.py _draw_summary` split into 5 helpers (_draw_header/_draw_kpis/_draw_highlight/_draw_tenant_and_leverage/_draw_footer); PDF output byte-verified via pypdf
+- `seed.py seed_database` split into 5 domain functions; complex tests split (CRUD → 3 tests, list_opportunities → 3 tests); `-> None` type hints added across test files + server.py
+- Known artifact: full-suite single-pass shows 3 register-test 429s (5/min rate limit, same IP) — pass in isolation
+
 ## Remaining Backlog
 - P1: Email notifications via Resend/SendGrid on lead capture (needs user API key)
 - P2: "Book a Strategy Call" conversion flow post-PDF download
