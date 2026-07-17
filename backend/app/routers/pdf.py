@@ -40,9 +40,8 @@ def _inr(n: int) -> str:
     return f"Rs. {n:,}"
 
 
-def _draw_summary(c: canvas.Canvas, o: dict, lead: dict):
+def _draw_header(c: canvas.Canvas, o: dict):
     w, h = A4
-    # Header band
     c.setFillColor(PV_NAVY)
     c.rect(0, h - 30 * mm, w, 30 * mm, stroke=0, fill=1)
     c.setFillColor(PV_GREEN)
@@ -54,7 +53,9 @@ def _draw_summary(c: canvas.Canvas, o: dict, lead: dict):
     c.setFont("Helvetica", 10)
     c.drawString(20 * mm, h - 27 * mm, o.get("location", ""))
 
-    # KPI grid
+
+def _draw_kpis(c: canvas.Canvas, o: dict):
+    w, h = A4
     y0 = h - 50 * mm
     items = [
         ("Asset Value", f"Rs. {o.get('asset_value_cr', 0)} Cr"),
@@ -77,8 +78,10 @@ def _draw_summary(c: canvas.Canvas, o: dict, lead: dict):
         c.setFillColor(PV_NAVY); c.setFont("Helvetica-Bold", 16)
         c.drawString(x + 4 * mm, y - 14 * mm, v)
 
-    # Highlight box
-    y_hl = y0 - 60 * mm
+
+def _draw_highlight(c: canvas.Canvas, o: dict):
+    w, h = A4
+    y_hl = h - 110 * mm
     c.setFillColor(HexColor("#F0FDF4"))
     c.setStrokeColor(PV_GREEN)
     c.roundRect(20 * mm, y_hl - 25 * mm, w - 40 * mm, 25 * mm, 4, stroke=1, fill=1)
@@ -97,14 +100,15 @@ def _draw_summary(c: canvas.Canvas, o: dict, lead: dict):
             buf = test
     if buf: c.drawString(24 * mm, line_y, buf)
 
-    # Tenant + lease
-    y_t = y_hl - 35 * mm
+
+def _draw_tenant_and_leverage(c: canvas.Canvas, o: dict):
+    w, h = A4
+    y_t = h - 145 * mm
     c.setFillColor(PV_NAVY); c.setFont("Helvetica-Bold", 11)
     c.drawString(20 * mm, y_t, "Tenant profile")
     c.setFillColor(PV_SLATE); c.setFont("Helvetica", 10)
     c.drawString(20 * mm, y_t - 6 * mm, f"{o.get('tenant', '—')}  ·  Lease term {o.get('lease_term_years', 0)} years")
 
-    # Leverage callout
     if o.get("leverage_available"):
         y_lv = y_t - 20 * mm
         c.setFillColor(PV_BLUE)
@@ -114,7 +118,9 @@ def _draw_summary(c: canvas.Canvas, o: dict, lead: dict):
         c.setFont("Helvetica", 8)
         c.drawString(24 * mm, y_lv - 11 * mm, "Bank/NBFC-backed debt participation available — subject to lender approval.")
 
-    # Footer
+
+def _draw_footer(c: canvas.Canvas, lead: dict):
+    w, _h = A4
     c.setFillColor(PV_SLATE); c.setFont("Helvetica-Oblique", 7)
     msg = ("All figures shown are illustrative only. Not investment advice. Real estate investments carry risk "
            "including capital loss. Returns are projected and not guaranteed.")
@@ -123,6 +129,14 @@ def _draw_summary(c: canvas.Canvas, o: dict, lead: dict):
     c.drawString(20 * mm, 8 * mm, f"Prepared for: {lead.get('name')} ({lead.get('email')})")
     c.setFillColor(PV_SLATE); c.setFont("Helvetica", 7)
     c.drawRightString(w - 20 * mm, 8 * mm, datetime.now(timezone.utc).strftime("%d %b %Y · propertyverse.in"))
+
+
+def _draw_summary(c: canvas.Canvas, o: dict, lead: dict):
+    _draw_header(c, o)
+    _draw_kpis(c, o)
+    _draw_highlight(c, o)
+    _draw_tenant_and_leverage(c, o)
+    _draw_footer(c, lead)
 
 
 @router.post("/opportunities/{opp_id}/pdf")

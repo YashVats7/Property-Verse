@@ -8,14 +8,14 @@ import requests
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://propverse-invest.preview.emergentagent.com").rstrip("/")
 API = f"{BASE_URL}/api"
 
-ADMIN_EMAIL = "admin@propertyverse.in"
-ADMIN_PASSWORD = "PropVerseAdmin2025!"
-DEMO_EMAIL = "investor@propertyverse.in"
-DEMO_PASSWORD = "Investor2025!"
+ADMIN_EMAIL = os.environ["ADMIN_EMAIL"]
+ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
+DEMO_EMAIL = os.environ["TEST_USER_EMAIL"]
+DEMO_PASSWORD = os.environ["TEST_USER_PASSWORD"]
 
 
 @pytest.fixture(scope="module")
-def admin_session():
+def admin_session() -> requests.Session:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     r = s.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
@@ -24,7 +24,7 @@ def admin_session():
 
 
 @pytest.fixture(scope="module")
-def investor_session():
+def investor_session() -> requests.Session:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     r = s.post(f"{API}/auth/login", json={"email": DEMO_EMAIL, "password": DEMO_PASSWORD})
@@ -33,23 +33,23 @@ def investor_session():
 
 
 # ----- Public content endpoints -----
-def test_public_content_hero():
+def test_public_content_hero() -> None:
     r = requests.get(f"{API}/content/hero")
     assert r.status_code == 200
     assert isinstance(r.json(), (dict, list))
 
 
-def test_public_content_about():
+def test_public_content_about() -> None:
     r = requests.get(f"{API}/content/about")
     assert r.status_code == 200
 
 
-def test_public_content_personas():
+def test_public_content_personas() -> None:
     r = requests.get(f"{API}/content/personas")
     assert r.status_code == 200
 
 
-def test_public_content_stats_endpoint():
+def test_public_content_stats_endpoint() -> None:
     r = requests.get(f"{API}/content/stats")
     assert r.status_code == 200
     d = r.json()
@@ -57,34 +57,34 @@ def test_public_content_stats_endpoint():
         assert k in d
 
 
-def test_public_content_unknown_404():
+def test_public_content_unknown_404() -> None:
     r = requests.get(f"{API}/content/nope")
     assert r.status_code == 404
 
 
 # ----- Admin auth guard -----
-def test_admin_opps_requires_auth():
+def test_admin_opps_requires_auth() -> None:
     r = requests.get(f"{API}/admin/opportunities")
     assert r.status_code == 401
 
 
-def test_admin_opps_forbid_investor(investor_session):
+def test_admin_opps_forbid_investor(investor_session) -> None:
     r = investor_session.get(f"{API}/admin/opportunities")
     assert r.status_code == 403
 
 
-def test_admin_content_requires_auth():
+def test_admin_content_requires_auth() -> None:
     r = requests.put(f"{API}/admin/content/stats", json={"value": {}})
     assert r.status_code == 401
 
 
-def test_admin_upload_forbid_investor(investor_session):
+def test_admin_upload_forbid_investor(investor_session) -> None:
     r = investor_session.post(f"{API}/admin/upload")
     assert r.status_code in (403, 422)  # 403 guard before form parse expected
 
 
 # ----- Admin opportunities listing -----
-def test_admin_list_opps_returns_8(admin_session):
+def test_admin_list_opps_returns_8(admin_session) -> None:
     r = admin_session.get(f"{API}/admin/opportunities")
     assert r.status_code == 200
     items = r.json()["items"]
@@ -94,10 +94,12 @@ def test_admin_list_opps_returns_8(admin_session):
         assert "_id" not in o
 
 
-# ----- Admin opportunities CRUD -----
-def test_admin_opp_create_update_delete(admin_session):
-    # CREATE
-    payload = {
+# ----- Admin opportunities CRUD (split: create / update / delete) -----
+_crud_state: dict = {}
+
+
+def _opp_payload() -> dict:
+    return {
         "name": f"TEST_New_{uuid.uuid4().hex[:6]}",
         "location": "TestCity",
         "asset_type": "A-Grade Office",
@@ -116,61 +118,69 @@ def test_admin_opp_create_update_delete(admin_session):
         "tags": ["TEST"],
         "highlight": "TEST highlight",
     }
+
+
+def test_admin_opp_create(admin_session) -> None:
+    payload = _opp_payload()
     r = admin_session.post(f"{API}/admin/opportunities", json=payload)
     assert r.status_code == 200, r.text
     created = r.json()
     assert created["id"].startswith("opp-")
-    new_id = created["id"]
     assert created["name"] == payload["name"]
+    _crud_state["id"] = created["id"]
+    _crud_state["payload"] = payload
 
-    # GET via public detail
-    r2 = requests.get(f"{API}/opportunities/{new_id}")
+    # visible via public detail
+    r2 = requests.get(f"{API}/opportunities/{created['id']}")
     assert r2.status_code == 200
-    assert r2.json()["id"] == new_id
+    assert r2.json()["id"] == created["id"]
 
-    # UPDATE
+
+def test_admin_opp_update(admin_session) -> None:
+    new_id = _crud_state["id"]
+    payload = _crud_state["payload"]
     update = {**payload, "name": payload["name"] + "_upd", "target_irr": 18.0}
-    r3 = admin_session.put(f"{API}/admin/opportunities/{new_id}", json=update)
-    assert r3.status_code == 200, r3.text
-    assert r3.json()["target_irr"] == 18.0
+    r = admin_session.put(f"{API}/admin/opportunities/{new_id}", json=update)
+    assert r.status_code == 200, r.text
+    assert r.json()["target_irr"] == 18.0
 
-    # GET to verify persisted
-    r3b = requests.get(f"{API}/opportunities/{new_id}")
-    assert r3b.json()["name"].endswith("_upd")
-
-    # DELETE
-    r4 = admin_session.delete(f"{API}/admin/opportunities/{new_id}")
-    assert r4.status_code == 200
-    assert r4.json()["ok"] is True
-
-    # GONE
-    r5 = requests.get(f"{API}/opportunities/{new_id}")
-    assert r5.status_code == 404
+    # persisted
+    r2 = requests.get(f"{API}/opportunities/{new_id}")
+    assert r2.json()["name"].endswith("_upd")
 
 
-def test_admin_opp_update_not_found(admin_session):
+def test_admin_opp_delete(admin_session) -> None:
+    new_id = _crud_state["id"]
+    r = admin_session.delete(f"{API}/admin/opportunities/{new_id}")
+    assert r.status_code == 200
+    assert r.json()["ok"] == True  # noqa: E712
+
+    # gone
+    r2 = requests.get(f"{API}/opportunities/{new_id}")
+    assert r2.status_code == 404
+
+
+def test_admin_opp_update_not_found(admin_session) -> None:
     r = admin_session.put(f"{API}/admin/opportunities/does-not-exist", json={
         "name": "X", "location": "Y", "asset_type": "Z",
     })
     assert r.status_code == 404
 
 
-def test_admin_opp_delete_not_found(admin_session):
+def test_admin_opp_delete_not_found(admin_session) -> None:
     r = admin_session.delete(f"{API}/admin/opportunities/does-not-exist")
     assert r.status_code == 404
 
 
 # ----- Admin content CRUD -----
-def test_admin_content_stats_update_and_reflect(admin_session):
-    # snapshot
-    before = requests.get(f"{API}/api/stats" if False else f"{API}/stats").json()
+def test_admin_content_stats_update_and_reflect(admin_session) -> None:
     new_val = {
         "aum_inr_cr": 9999, "investors": 12345, "properties": 77,
         "avg_irr": 16.5, "cities": 11, "occupancy_pct": 97,
     }
     r = admin_session.put(f"{API}/admin/content/stats", json={"value": new_val})
     assert r.status_code == 200
-    assert r.json()["ok"] is True
+    assert r.json()["ok"] == True  # noqa: E712
 
     # reflected in public
     after = requests.get(f"{API}/stats").json()
@@ -187,7 +197,7 @@ def test_admin_content_stats_update_and_reflect(admin_session):
     assert requests.get(f"{API}/stats").json()["aum_inr_cr"] == 1240
 
 
-def test_admin_content_hero_about_personas(admin_session):
+def test_admin_content_hero_about_personas(admin_session) -> None:
     for key in ("hero", "about", "personas"):
         current = requests.get(f"{API}/content/{key}").json()
         # round-trip put
@@ -196,7 +206,7 @@ def test_admin_content_hero_about_personas(admin_session):
 
 
 # ----- Image upload -----
-def test_admin_upload_image(admin_session):
+def test_admin_upload_image(admin_session) -> None:
     # Minimal 1x1 PNG
     png_bytes = (
         b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
@@ -215,7 +225,7 @@ def test_admin_upload_image(admin_session):
     assert head.status_code == 200, f"Static {url} not served: {head.status_code}"
 
 
-def test_admin_upload_rejects_bad_ext(admin_session):
+def test_admin_upload_rejects_bad_ext(admin_session) -> None:
     files = {"file": ("bad.exe", io.BytesIO(b"x"), "application/octet-stream")}
     h = {k: v for k, v in admin_session.headers.items() if k.lower() != "content-type"}
     r = requests.post(f"{API}/admin/upload", files=files, cookies=admin_session.cookies, headers=h)
@@ -223,7 +233,7 @@ def test_admin_upload_rejects_bad_ext(admin_session):
 
 
 # ----- Reset opportunities + watchlist preserved -----
-def test_admin_reset_opportunities_preserves_demo_watchlist(admin_session, investor_session):
+def test_admin_reset_opportunities_preserves_demo_watchlist(admin_session, investor_session) -> None:
     r = admin_session.post(f"{API}/admin/opportunities/reset")
     assert r.status_code == 200, r.text
     assert r.json()["count"] == 8

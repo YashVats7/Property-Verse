@@ -121,14 +121,14 @@ async def upsert_content(key: str, value):
     )
 
 
-async def seed_database():
-    """Seed indexes + admin + demo investor + opportunities + content on app startup."""
+async def _seed_indexes() -> None:
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
     await db.opportunities.create_index("id", unique=True)
     await db.content.create_index("key", unique=True)
 
-    # Admin
+
+async def _seed_admin() -> None:
     admin_email = os.environ.get("ADMIN_EMAIL", "admin@propertyverse.in").lower()
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
     if not await db.users.find_one({"email": admin_email}):
@@ -141,7 +141,8 @@ async def seed_database():
             "watchlist": [],
         })
 
-    # Demo investor
+
+async def _seed_demo_investor() -> None:
     test_email = os.environ.get("TEST_USER_EMAIL", "investor@propertyverse.in").lower()
     test_password = os.environ.get("TEST_USER_PASSWORD", "Investor2025!")
     existing = await db.users.find_one({"email": test_email})
@@ -160,11 +161,15 @@ async def seed_database():
             {"$set": {"watchlist": ["opp-blr-grade-a", "opp-leverage-alpha"]}},
         )
 
-    # Opportunities — only seed if empty (admin edits persist)
+
+async def _seed_opportunities() -> None:
+    # Only seed if empty (admin edits persist)
     if await db.opportunities.count_documents({}) == 0:
         await reset_opportunities_to_defaults()
 
-    # Content blocks — only insert if missing (admin edits persist)
+
+async def _seed_content_blocks() -> None:
+    # Only insert if missing (admin edits persist)
     for key, val in [
         ("stats", DEFAULT_STATS),
         ("hero", DEFAULT_HERO),
@@ -173,3 +178,12 @@ async def seed_database():
     ]:
         if not await db.content.find_one({"key": key}):
             await upsert_content(key, val)
+
+
+async def seed_database() -> None:
+    """Seed indexes + admin + demo investor + opportunities + content on app startup."""
+    await _seed_indexes()
+    await _seed_admin()
+    await _seed_demo_investor()
+    await _seed_opportunities()
+    await _seed_content_blocks()

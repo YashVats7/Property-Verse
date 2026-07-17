@@ -11,10 +11,10 @@ import requests
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://propverse-invest.preview.emergentagent.com").rstrip("/")
 API = f"{BASE_URL}/api"
 
-DEMO_EMAIL = "investor@propertyverse.in"
-DEMO_PASSWORD = "Investor2025!"
-ADMIN_EMAIL = "admin@propertyverse.in"
-ADMIN_PASSWORD = "PropVerseAdmin2025!"
+DEMO_EMAIL = os.environ["TEST_USER_EMAIL"]
+DEMO_PASSWORD = os.environ["TEST_USER_PASSWORD"]
+ADMIN_EMAIL = os.environ["ADMIN_EMAIL"]
+ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
 
 SAMPLE_IDS = [
     "opp-blr-grade-a", "opp-pune-premium", "opp-hyd-tower", "opp-ncr-business-park",
@@ -26,14 +26,14 @@ REQUIRED_FIELDS = ["leverage_available", "asset_value_cr", "target_irr_range", "
 
 # ---------- Fixtures ----------
 @pytest.fixture(scope="module")
-def client():
+def client() -> requests.Session:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     return s
 
 
 @pytest.fixture(scope="module")
-def demo_session():
+def demo_session() -> requests.Session:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     r = s.post(f"{API}/auth/login", json={"email": DEMO_EMAIL, "password": DEMO_PASSWORD})
@@ -42,27 +42,36 @@ def demo_session():
 
 
 # ---------- Health / Root ----------
-def test_root(client):
+def test_root(client) -> None:
     r = client.get(f"{API}/")
     assert r.status_code == 200
     assert r.json().get("status") == "ok"
 
 
 # ---------- Opportunities ----------
-def test_list_opportunities(client):
+def test_list_opportunities_total(client) -> None:
     r = client.get(f"{API}/opportunities")
     assert r.status_code == 200
-    data = r.json()
-    assert data["total"] == 8
-    ids = {o["id"] for o in data["items"]}
+    assert r.json()["total"] == 8
+
+
+def test_list_opportunities_ids(client) -> None:
+    r = client.get(f"{API}/opportunities")
+    assert r.status_code == 200
+    ids = {o["id"] for o in r.json()["items"]}
     assert ids == set(SAMPLE_IDS)
-    for o in data["items"]:
+
+
+def test_list_opportunities_required_fields(client) -> None:
+    r = client.get(f"{API}/opportunities")
+    assert r.status_code == 200
+    for o in r.json()["items"]:
         assert "name" in o and "image" in o and "target_irr" in o
         for f in REQUIRED_FIELDS:
             assert f in o, f"Missing field {f} in {o['id']}"
 
 
-def test_opportunity_detail_for_all_ids(client):
+def test_opportunity_detail_for_all_ids(client) -> None:
     for oid in SAMPLE_IDS:
         r = client.get(f"{API}/opportunities/{oid}")
         assert r.status_code == 200, f"{oid} returned {r.status_code}"
@@ -72,7 +81,7 @@ def test_opportunity_detail_for_all_ids(client):
             assert f in d
 
 
-def test_list_opportunities_filter_city(client):
+def test_list_opportunities_filter_city(client) -> None:
     r = client.get(f"{API}/opportunities", params={"city": "Mumbai"})
     assert r.status_code == 200
     data = r.json()
@@ -81,7 +90,7 @@ def test_list_opportunities_filter_city(client):
         assert "mumbai" in o["location"].lower()
 
 
-def test_get_opportunity_detail(client):
+def test_get_opportunity_detail(client) -> None:
     r = client.get(f"{API}/opportunities/opp-bkc-skyline")
     assert r.status_code == 200
     data = r.json()
@@ -90,16 +99,16 @@ def test_get_opportunity_detail(client):
 
 
 # ---------- Logout idempotency ----------
-def test_logout_idempotent_no_auth(client):
+def test_logout_idempotent_no_auth(client) -> None:
     """Logout should work even without auth cookies."""
     s = requests.Session()
     r = s.post(f"{API}/auth/logout")
     assert r.status_code == 200
-    assert r.json().get("ok") is True
+    assert r.json().get("ok") == True  # noqa: E712
 
 
 # ---------- Demo investor watchlist migration ----------
-def test_demo_watchlist_contains_valid_new_ids(demo_session):
+def test_demo_watchlist_contains_valid_new_ids(demo_session) -> None:
     r = demo_session.get(f"{API}/dashboard")
     assert r.status_code == 200
     data = r.json()
@@ -109,13 +118,13 @@ def test_demo_watchlist_contains_valid_new_ids(demo_session):
     assert wl_ids.issubset(valid_ids), f"Watchlist contains invalid IDs: {wl_ids - valid_ids}"
 
 
-def test_get_opportunity_not_found(client):
+def test_get_opportunity_not_found(client) -> None:
     r = client.get(f"{API}/opportunities/does-not-exist")
     assert r.status_code == 404
 
 
 # ---------- Stats ----------
-def test_stats(client):
+def test_stats(client) -> None:
     r = client.get(f"{API}/stats")
     assert r.status_code == 200
     data = r.json()
@@ -124,7 +133,7 @@ def test_stats(client):
 
 
 # ---------- Lead Capture ----------
-def test_waitlist(client):
+def test_waitlist(client) -> None:
     payload = {
         "name": "TEST_Investor",
         "email": f"test_{uuid.uuid4().hex[:8]}@example.com",
@@ -135,10 +144,10 @@ def test_waitlist(client):
     r = client.post(f"{API}/waitlist", json=payload)
     assert r.status_code == 200
     body = r.json()
-    assert body["ok"] is True and "id" in body
+    assert body["ok"] == True and "id" in body  # noqa: E712
 
 
-def test_partner(client):
+def test_partner(client) -> None:
     payload = {
         "name": "TEST_Partner",
         "email": f"partner_{uuid.uuid4().hex[:8]}@example.com",
@@ -149,10 +158,10 @@ def test_partner(client):
     }
     r = client.post(f"{API}/partner", json=payload)
     assert r.status_code == 200
-    assert r.json()["ok"] is True
+    assert r.json()["ok"] == True  # noqa: E712
 
 
-def test_strategy_call(client):
+def test_strategy_call(client) -> None:
     payload = {
         "name": "TEST_Caller",
         "email": f"call_{uuid.uuid4().hex[:8]}@example.com",
@@ -163,11 +172,11 @@ def test_strategy_call(client):
     }
     r = client.post(f"{API}/strategy-call", json=payload)
     assert r.status_code == 200
-    assert r.json()["ok"] is True
+    assert r.json()["ok"] == True  # noqa: E712
 
 
 # ---------- Auth ----------
-def test_demo_login_and_me():
+def test_demo_login_and_me() -> None:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     r = s.post(f"{API}/auth/login", json={"email": DEMO_EMAIL, "password": DEMO_PASSWORD})
@@ -182,7 +191,7 @@ def test_demo_login_and_me():
     assert r2.json()["email"] == DEMO_EMAIL
 
 
-def test_admin_login():
+def test_admin_login() -> None:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     r = s.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
@@ -190,18 +199,18 @@ def test_admin_login():
     assert r.json()["role"] == "admin"
 
 
-def test_login_invalid_credentials(client):
+def test_login_invalid_credentials(client) -> None:
     r = client.post(f"{API}/auth/login", json={"email": "noone@example.com", "password": "wrong"})
     assert r.status_code in (401, 429)
 
 
-def test_me_unauthenticated(client):
+def test_me_unauthenticated(client) -> None:
     s = requests.Session()
     r = s.get(f"{API}/auth/me")
     assert r.status_code == 401
 
 
-def test_register_and_logout():
+def test_register_and_logout() -> None:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     email = f"test_signup_{uuid.uuid4().hex[:8]}@example.com"
@@ -227,13 +236,13 @@ def test_register_and_logout():
 
 
 # ---------- Dashboard ----------
-def test_dashboard_requires_auth(client):
+def test_dashboard_requires_auth(client) -> None:
     s = requests.Session()
     r = s.get(f"{API}/dashboard")
     assert r.status_code == 401
 
 
-def test_dashboard_loads_demo(demo_session):
+def test_dashboard_loads_demo(demo_session) -> None:
     r = demo_session.get(f"{API}/dashboard")
     assert r.status_code == 200, r.text
     data = r.json()
@@ -243,7 +252,7 @@ def test_dashboard_loads_demo(demo_session):
     assert isinstance(data["watchlist"], list)
 
 
-def test_dashboard_watchlist_crud():
+def test_dashboard_watchlist_crud() -> None:
     # Use fresh signup to get clean watchlist
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
@@ -280,7 +289,7 @@ def test_dashboard_watchlist_crud():
 
 # ---------- Admin Endpoints ----------
 @pytest.fixture(scope="module")
-def admin_session():
+def admin_session() -> requests.Session:
     s = requests.Session()
     s.headers.update({"Content-Type": "application/json"})
     r = s.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
@@ -289,7 +298,7 @@ def admin_session():
     return s
 
 
-def test_admin_stats(admin_session):
+def test_admin_stats(admin_session) -> None:
     r = admin_session.get(f"{API}/admin/stats")
     assert r.status_code == 200, r.text
     data = r.json()
@@ -298,26 +307,26 @@ def test_admin_stats(admin_session):
         assert isinstance(data[k], int)
 
 
-def test_admin_waitlist_list(admin_session):
+def test_admin_waitlist_list(admin_session) -> None:
     r = admin_session.get(f"{API}/admin/leads/waitlist")
     assert r.status_code == 200
     data = r.json()
     assert "items" in data and isinstance(data["items"], list)
 
 
-def test_admin_partners_list(admin_session):
+def test_admin_partners_list(admin_session) -> None:
     r = admin_session.get(f"{API}/admin/leads/partners")
     assert r.status_code == 200
     assert isinstance(r.json().get("items"), list)
 
 
-def test_admin_strategy_calls_list(admin_session):
+def test_admin_strategy_calls_list(admin_session) -> None:
     r = admin_session.get(f"{API}/admin/leads/strategy-calls")
     assert r.status_code == 200
     assert isinstance(r.json().get("items"), list)
 
 
-def test_admin_users_list_no_password_hash(admin_session):
+def test_admin_users_list_no_password_hash(admin_session) -> None:
     r = admin_session.get(f"{API}/admin/users")
     assert r.status_code == 200
     items = r.json().get("items")
@@ -330,7 +339,7 @@ def test_admin_users_list_no_password_hash(admin_session):
         assert "email" in u
 
 
-def test_admin_delete_waitlist_lead(admin_session, client):
+def test_admin_delete_waitlist_lead(admin_session, client) -> None:
     # Create a waitlist lead first
     email = f"TEST_admin_del_{uuid.uuid4().hex[:8]}@example.com"
     payload = {
@@ -362,13 +371,13 @@ def test_admin_delete_waitlist_lead(admin_session, client):
     assert found2 is None, "Waitlist lead still present after delete"
 
 
-def test_admin_delete_unknown_collection(admin_session):
+def test_admin_delete_unknown_collection(admin_session) -> None:
     r = admin_session.delete(f"{API}/admin/leads/unknown-coll/abc123")
     assert r.status_code == 400
 
 
 # ---------- Admin auth guard ----------
-def test_admin_endpoints_require_auth():
+def test_admin_endpoints_require_auth() -> None:
     s = requests.Session()
     for path in ["/admin/stats", "/admin/leads/waitlist", "/admin/leads/partners",
                  "/admin/leads/strategy-calls", "/admin/users"]:
@@ -376,7 +385,7 @@ def test_admin_endpoints_require_auth():
         assert r.status_code == 401, f"{path} should be 401 unauth, got {r.status_code}"
 
 
-def test_admin_endpoints_forbid_investor(demo_session):
+def test_admin_endpoints_forbid_investor(demo_session) -> None:
     for path in ["/admin/stats", "/admin/leads/waitlist", "/admin/leads/partners",
                  "/admin/leads/strategy-calls", "/admin/users"]:
         r = demo_session.get(f"{API}{path}")
@@ -384,7 +393,7 @@ def test_admin_endpoints_forbid_investor(demo_session):
 
 
 # ---------- Demo investor watchlist forced alignment ----------
-def test_demo_watchlist_forced_alignment(demo_session):
+def test_demo_watchlist_forced_alignment(demo_session) -> None:
     """v3: demo investor watchlist should be FORCED to opp-blr-grade-a + opp-leverage-alpha on startup."""
     r = demo_session.get(f"{API}/dashboard")
     assert r.status_code == 200
@@ -397,7 +406,7 @@ def test_demo_watchlist_forced_alignment(demo_session):
 
 
 # ---------- Static asset presence ----------
-def test_generated_assets_present(client):
+def test_generated_assets_present(client) -> None:
     for oid in SAMPLE_IDS:
         url = f"{BASE_URL}/generated/assets/{oid}.png"
         r = client.head(url, allow_redirects=True)

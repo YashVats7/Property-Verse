@@ -32,7 +32,7 @@ api_router = APIRouter(prefix="/api")
 
 
 @api_router.get("/")
-async def root():
+async def root() -> dict:
     return {"message": "Property Verse API", "status": "ok"}
 
 
@@ -66,7 +66,7 @@ async def security_headers(request: Request, call_next):
     return response
 
 
-async def ensure_indexes():
+async def ensure_indexes() -> None:
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
     await db.refresh_tokens.create_index("jti")
@@ -79,12 +79,12 @@ logger = logging.getLogger(__name__)
 
 
 @app.on_event("startup")
-async def on_startup():
+async def on_startup() -> None:
     await seed_database()
     await ensure_indexes()
     logger.info("Startup complete.")
 
 
 @app.on_event("shutdown")
-async def on_shutdown():
+async def on_shutdown() -> None:
     client.close()

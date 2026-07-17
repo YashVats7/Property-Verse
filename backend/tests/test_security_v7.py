@@ -12,10 +12,10 @@ BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://propverse-invest.pre
 API = f"{BASE_URL}/api"
 LOCAL_API = "http://localhost:8001/api"
 
-ADMIN_EMAIL = "admin@propertyverse.in"
-ADMIN_PASSWORD = "PropVerseAdmin2025!"
-INV_EMAIL = "investor@propertyverse.in"
-INV_PASSWORD = "Investor2025!"
+ADMIN_EMAIL = os.environ["ADMIN_EMAIL"]
+ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
+INV_EMAIL = os.environ["TEST_USER_EMAIL"]
+INV_PASSWORD = os.environ["TEST_USER_PASSWORD"]
 
 
 def _tiny_png() -> bytes:
@@ -33,7 +33,7 @@ def _tiny_png() -> bytes:
 
 
 @pytest.fixture(scope="module")
-def admin_session():
+def admin_session() -> requests.Session:
     s = requests.Session()
     r = s.post(f"{API}/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert r.status_code == 200, r.text
@@ -41,7 +41,7 @@ def admin_session():
 
 
 # ------------- Security headers -------------
-def test_security_headers_present():
+def test_security_headers_present() -> None:
     r = requests.get(f"{API}/")
     assert r.status_code == 200
     h = {k.lower(): v for k, v in r.headers.items()}
@@ -53,27 +53,27 @@ def test_security_headers_present():
 
 
 # ------------- Docs disabled -------------
-def test_openapi_disabled():
+def test_openapi_disabled() -> None:
     r = requests.get(f"{API}/openapi.json")
     assert r.status_code == 404
 
 
 # ------------- Password policy -------------
-def test_register_weak_password_too_short():
+def test_register_weak_password_too_short() -> None:
     email = f"t_{uuid.uuid4().hex[:10]}@example.com"
     r = requests.post(f"{API}/auth/register", json={"name": "T", "email": email, "password": "abc"})
     assert r.status_code == 400
     assert "at least 8" in r.json().get("detail", "").lower()
 
 
-def test_register_weak_password_letters_only():
+def test_register_weak_password_letters_only() -> None:
     email = f"t_{uuid.uuid4().hex[:10]}@example.com"
     r = requests.post(f"{API}/auth/register", json={"name": "T", "email": email, "password": "abcdefgh"})
     assert r.status_code == 400
     assert "letter" in r.json().get("detail", "").lower() or "number" in r.json().get("detail", "").lower()
 
 
-def test_register_strong_password_ok():
+def test_register_strong_password_ok() -> None:
     email = f"t_{uuid.uuid4().hex[:10]}@example.com"
     r = requests.post(f"{API}/auth/register", json={"name": "T", "email": email, "password": "SecurePass123"})
     assert r.status_code == 200, r.text
@@ -81,7 +81,7 @@ def test_register_strong_password_ok():
 
 
 # ------------- Honeypot -------------
-def test_waitlist_honeypot_silently_discarded(admin_session):
+def test_waitlist_honeypot_silently_discarded(admin_session) -> None:
     before = admin_session.get(f"{API}/admin/leads/waitlist?limit=500").json()["items"]
     before_count = len(before)
     email = f"honey_{uuid.uuid4().hex[:8]}@example.com"
@@ -91,7 +91,7 @@ def test_waitlist_honeypot_silently_discarded(admin_session):
         "website": "http://spam.com",
     })
     assert r.status_code == 200
-    assert r.json().get("ok") is True
+    assert r.json().get("ok") == True  # noqa: E712
     after = admin_session.get(f"{API}/admin/leads/waitlist?limit=500").json()["items"]
     # Ensure the honeypot email is NOT persisted
     assert not any(x.get("email") == email for x in after)
@@ -100,7 +100,7 @@ def test_waitlist_honeypot_silently_discarded(admin_session):
 
 
 # ------------- Refresh token rotation + revocation -------------
-def test_refresh_rotation_revokes_old_token():
+def test_refresh_rotation_revokes_old_token() -> None:
     s = requests.Session()
     email = f"rot_{uuid.uuid4().hex[:8]}@example.com"
     r = s.post(f"{API}/auth/register", json={"name": "Rot", "email": email, "password": "SecurePass123"})
@@ -122,7 +122,7 @@ def test_refresh_rotation_revokes_old_token():
     assert "revoked" in r3.json().get("detail", "").lower()
 
 
-def test_logout_revokes_refresh_token():
+def test_logout_revokes_refresh_token() -> None:
     s = requests.Session()
     email = f"lo_{uuid.uuid4().hex[:8]}@example.com"
     r = s.post(f"{API}/auth/register", json={"name": "Lo", "email": email, "password": "SecurePass123"})
@@ -140,14 +140,14 @@ def test_logout_revokes_refresh_token():
 
 
 # ------------- Admin image upload magic-byte validation -------------
-def test_upload_rejects_text_as_png(admin_session):
+def test_upload_rejects_text_as_png(admin_session) -> None:
     files = {"file": ("fake.png", b"NOT A REAL PNG just plain text bytes", "image/png")}
     r = admin_session.post(f"{API}/admin/upload", files=files)
     assert r.status_code == 400
     assert "image" in r.json().get("detail", "").lower()
 
 
-def test_upload_accepts_real_png_and_audits(admin_session):
+def test_upload_accepts_real_png_and_audits(admin_session) -> None:
     before = admin_session.get(f"{API}/admin/audit-log?limit=10").json()["items"]
     before_upload_count = sum(1 for x in before if x.get("action") == "upload_image")
 
@@ -164,7 +164,7 @@ def test_upload_accepts_real_png_and_audits(admin_session):
 
 
 # ------------- Audit log endpoint -------------
-def test_audit_log_endpoint(admin_session):
+def test_audit_log_endpoint(admin_session) -> None:
     r = admin_session.get(f"{API}/admin/audit-log?limit=50")
     assert r.status_code == 200
     items = r.json()["items"]
@@ -175,7 +175,7 @@ def test_audit_log_endpoint(admin_session):
             assert k in rec
 
 
-def test_audit_log_forbidden_for_investor():
+def test_audit_log_forbidden_for_investor() -> None:
     s = requests.Session()
     r = s.post(f"{API}/auth/login", json={"email": INV_EMAIL, "password": INV_PASSWORD})
     assert r.status_code == 200
@@ -184,7 +184,7 @@ def test_audit_log_forbidden_for_investor():
 
 
 # ------------- PDF gen still works -------------
-def test_pdf_generation_still_works():
+def test_pdf_generation_still_works() -> None:
     r = requests.post(
         f"{API}/opportunities/opp-bkc-skyline/pdf",
         json={"name": "T PDF", "email": f"pdf_{uuid.uuid4().hex[:6]}@example.com"},
@@ -195,7 +195,7 @@ def test_pdf_generation_still_works():
 
 
 # ------------- Rate limiting via localhost + spoofed XFF (run LAST) -------------
-def test_zzz_waitlist_rate_limit_429():
+def test_zzz_waitlist_rate_limit_429() -> None:
     """Test rate limits via localhost with spoofed XFF so shared public state is not polluted."""
     ip = f"198.51.100.{50 + (int(time.time()) % 40)}"
     headers = {"X-Forwarded-For": ip, "Content-Type": "application/json"}
@@ -212,7 +212,7 @@ def test_zzz_waitlist_rate_limit_429():
     assert got_429, "Expected 429 within 14 requests on /waitlist (limit 10/min)"
 
 
-def test_zzz_register_rate_limit_429():
+def test_zzz_register_rate_limit_429() -> None:
     ip = f"198.51.100.{100 + (int(time.time()) % 40)}"
     headers = {"X-Forwarded-For": ip, "Content-Type": "application/json"}
     got_429 = False
@@ -227,7 +227,7 @@ def test_zzz_register_rate_limit_429():
     assert got_429, "Expected 429 within 9 requests on /auth/register (limit 5/min)"
 
 
-def test_zzz_login_rate_limit_429():
+def test_zzz_login_rate_limit_429() -> None:
     ip = f"198.51.100.{150 + (int(time.time()) % 40)}"
     headers = {"X-Forwarded-For": ip, "Content-Type": "application/json"}
     got_429 = False
