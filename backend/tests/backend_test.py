@@ -104,7 +104,7 @@ def test_logout_idempotent_no_auth(client) -> None:
     s = requests.Session()
     r = s.post(f"{API}/auth/logout")
     assert r.status_code == 200
-    assert r.json().get("ok") == True  # noqa: E712
+    assert r.json().get("ok")
 
 
 # ---------- Demo investor watchlist migration ----------
@@ -144,7 +144,7 @@ def test_waitlist(client) -> None:
     r = client.post(f"{API}/waitlist", json=payload)
     assert r.status_code == 200
     body = r.json()
-    assert body["ok"] == True and "id" in body  # noqa: E712
+    assert body["ok"] and "id" in body
 
 
 def test_partner(client) -> None:
@@ -158,7 +158,7 @@ def test_partner(client) -> None:
     }
     r = client.post(f"{API}/partner", json=payload)
     assert r.status_code == 200
-    assert r.json()["ok"] == True  # noqa: E712
+    assert r.json()["ok"]
 
 
 def test_strategy_call(client) -> None:
@@ -172,7 +172,7 @@ def test_strategy_call(client) -> None:
     }
     r = client.post(f"{API}/strategy-call", json=payload)
     assert r.status_code == 200
-    assert r.json()["ok"] == True  # noqa: E712
+    assert r.json()["ok"]
 
 
 # ---------- Auth ----------

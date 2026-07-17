@@ -91,7 +91,7 @@ def test_waitlist_honeypot_silently_discarded(admin_session) -> None:
         "website": "http://spam.com",
     })
     assert r.status_code == 200
-    assert r.json().get("ok") == True  # noqa: E712
+    assert r.json().get("ok")
     after = admin_session.get(f"{API}/admin/leads/waitlist?limit=500").json()["items"]
     # Ensure the honeypot email is NOT persisted
     assert not any(x.get("email") == email for x in after)

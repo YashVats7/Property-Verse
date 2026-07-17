@@ -153,7 +153,7 @@ def test_admin_opp_delete(admin_session) -> None:
     new_id = _crud_state["id"]
     r = admin_session.delete(f"{API}/admin/opportunities/{new_id}")
     assert r.status_code == 200
-    assert r.json()["ok"] == True  # noqa: E712
+    assert r.json()["ok"]
 
     # gone
     r2 = requests.get(f"{API}/opportunities/{new_id}")
@@ -180,7 +180,7 @@ def test_admin_content_stats_update_and_reflect(admin_session) -> None:
     }
     r = admin_session.put(f"{API}/admin/content/stats", json={"value": new_val})
     assert r.status_code == 200
-    assert r.json()["ok"] == True  # noqa: E712
+    assert r.json()["ok"]
 
     # reflected in public
     after = requests.get(f"{API}/stats").json()

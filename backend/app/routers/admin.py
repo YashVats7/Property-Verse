@@ -35,7 +35,7 @@ def _valid_image_bytes(ext: str, data: bytes) -> bool:
     return False
 
 
-async def _audit(admin: dict, action: str, target: str, detail: str = ""):
+async def _audit(admin: dict, action: str, target: str, detail: str = "") -> None:
     await db.audit_log.insert_one({
         "id": str(uuid.uuid4()),
         "admin_email": admin.get("email", "unknown"),
@@ -46,7 +46,7 @@ async def _audit(admin: dict, action: str, target: str, detail: str = ""):
     })
 
 
-def _serialize(doc):
+def _serialize(doc: Optional[dict]) -> Optional[dict]:
     if not doc:
         return None
     doc = dict(doc)
@@ -60,7 +60,7 @@ def _serialize(doc):
 
 # ---------------- Stats / overview ----------------
 @router.get("/stats")
-async def admin_stats(_=Depends(require_admin)):
+async def admin_stats(_=Depends(require_admin)) -> dict:
     return {
         "waitlist": await db.leads_waitlist.count_documents({}),
         "partners": await db.leads_partners.count_documents({}),
@@ -73,32 +73,32 @@ async def admin_stats(_=Depends(require_admin)):
 
 # ---------------- Leads / users ----------------
 @router.get("/leads/waitlist")
-async def list_waitlist(_=Depends(require_admin), source: Optional[str] = None, limit: int = Query(200, ge=1, le=500)):
+async def list_waitlist(_=Depends(require_admin), source: Optional[str] = None, limit: int = Query(200, ge=1, le=500)) -> dict:
     q = {"source": source} if source else {}
     cursor = db.leads_waitlist.find(q).sort("created_at", -1).limit(limit)
     return {"items": [_serialize(d) async for d in cursor]}
 
 
 @router.get("/leads/partners")
-async def list_partners(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)):
+async def list_partners(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)) -> dict:
     cursor = db.leads_partners.find({}).sort("created_at", -1).limit(limit)
     return {"items": [_serialize(d) async for d in cursor]}
 
 
 @router.get("/leads/strategy-calls")
-async def list_strategy_calls(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)):
+async def list_strategy_calls(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)) -> dict:
     cursor = db.leads_strategy_calls.find({}).sort("created_at", -1).limit(limit)
     return {"items": [_serialize(d) async for d in cursor]}
 
 
 @router.get("/users")
-async def list_users(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)):
+async def list_users(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)) -> dict:
     cursor = db.users.find({}, {"password_hash": 0}).sort("created_at", -1).limit(limit)
     return {"items": [_serialize(d) async for d in cursor]}
 
 
 @router.delete("/leads/{collection}/{lead_id}")
-async def delete_lead(collection: str, lead_id: str, admin=Depends(require_admin)):
+async def delete_lead(collection: str, lead_id: str, admin: dict = Depends(require_admin)) -> dict:
     coll_map = {"waitlist": db.leads_waitlist, "partners": db.leads_partners, "strategy-calls": db.leads_strategy_calls}
     coll = coll_map.get(collection)
     if coll is None:
@@ -139,7 +139,7 @@ class OpportunityIn(BaseModel):
 
 
 @router.get("/opportunities")
-async def list_admin_opps(_=Depends(require_admin)):
+async def list_admin_opps(_=Depends(require_admin)) -> dict:
     cursor = db.opportunities.find({}).sort("order", 1)
     items = []
     async for d in cursor:
@@ -149,7 +149,7 @@ async def list_admin_opps(_=Depends(require_admin)):
 
 
 @router.post("/opportunities")
-async def create_opp(body: OpportunityIn, admin=Depends(require_admin)):
+async def create_opp(body: OpportunityIn, admin: dict = Depends(require_admin)) -> dict:
     doc = body.model_dump()
     if not doc.get("id"):
         slug = (doc["name"] or "opp").lower().replace(" ", "-")[:40]
@@ -166,7 +166,7 @@ async def create_opp(body: OpportunityIn, admin=Depends(require_admin)):
 
 
 @router.put("/opportunities/{opp_id}")
-async def update_opp(opp_id: str, body: OpportunityIn, admin=Depends(require_admin)):
+async def update_opp(opp_id: str, body: OpportunityIn, admin: dict = Depends(require_admin)) -> dict:
     doc = body.model_dump(exclude_unset=True)
     doc.pop("id", None)
     doc["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -180,7 +180,7 @@ async def update_opp(opp_id: str, body: OpportunityIn, admin=Depends(require_adm
 
 
 @router.delete("/opportunities/{opp_id}")
-async def delete_opp(opp_id: str, admin=Depends(require_admin)):
+async def delete_opp(opp_id: str, admin: dict = Depends(require_admin)) -> dict:
     res = await db.opportunities.delete_one({"id": opp_id})
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Opportunity not found")
@@ -189,7 +189,7 @@ async def delete_opp(opp_id: str, admin=Depends(require_admin)):
 
 
 @router.post("/opportunities/reset")
-async def reset_opps(admin=Depends(require_admin)):
+async def reset_opps(admin: dict = Depends(require_admin)) -> dict:
     await reset_opportunities_to_defaults()
     await _audit(admin, "reset_opportunities", "all")
     return {"ok": True, "count": await db.opportunities.count_documents({})}
@@ -201,7 +201,7 @@ class ContentIn(BaseModel):
 
 
 @router.get("/content/{key}")
-async def get_content_admin(key: str, _=Depends(require_admin)):
+async def get_content_admin(key: str, _=Depends(require_admin)) -> Any:
     doc = await db.content.find_one({"key": key})
     if not doc:
         raise HTTPException(status_code=404, detail="Not found")
@@ -209,7 +209,7 @@ async def get_content_admin(key: str, _=Depends(require_admin)):
 
 
 @router.put("/content/{key}")
-async def put_content_admin(key: str, body: ContentIn, admin=Depends(require_admin)):
+async def put_content_admin(key: str, body: ContentIn, admin: dict = Depends(require_admin)) -> dict:
     await upsert_content(key, body.value)
     await _audit(admin, "update_content", key)
     return {"ok": True, "key": key}
@@ -217,14 +217,14 @@ async def put_content_admin(key: str, body: ContentIn, admin=Depends(require_adm
 
 # ---------------- Audit log ----------------
 @router.get("/audit-log")
-async def get_audit_log(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)):
+async def get_audit_log(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)) -> dict:
     cursor = db.audit_log.find({}).sort("created_at", -1).limit(limit)
     return {"items": [_serialize(d) async for d in cursor]}
 
 
 # ---------------- Image upload ----------------
 @router.post("/upload")
-async def upload_image(file: UploadFile = File(...), admin=Depends(require_admin)):
+async def upload_image(file: UploadFile = File(...), admin: dict = Depends(require_admin)) -> dict:
     ext = Path(file.filename or "").suffix.lower()
     if ext not in ALLOWED_EXT:
         raise HTTPException(status_code=400, detail=f"Unsupported extension. Allowed: {sorted(ALLOWED_EXT)}")
