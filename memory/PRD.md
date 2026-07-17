@@ -201,6 +201,11 @@ Applied review fixes, verified regression-free by testing agent (iteration_6.jso
 - `seed.py seed_database` split into 5 domain functions; complex tests split (CRUD → 3 tests, list_opportunities → 3 tests); `-> None` type hints added across test files + server.py
 - Known artifact: full-suite single-pass shows 3 register-test 429s (5/min rate limit, same IP) — pass in isolation
 
+## Code Quality Pass — Round 2 (June 2026)
+- `== True` boolean assertions → direct truthiness in all test files
+- Full type hints added to `app/routers/opportunities.py` and `app/routers/admin.py`
+- Verified zero regressions via testing agent (iteration_7.json, 69/69 effective)
+
 ## Remaining Backlog
 - P1: Email notifications via Resend/SendGrid on lead capture (needs user API key)
 - P2: "Book a Strategy Call" conversion flow post-PDF download
