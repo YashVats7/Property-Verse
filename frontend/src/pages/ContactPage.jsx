@@ -4,7 +4,7 @@ import { Mail, Phone, MapPin, CheckCircle2, ArrowRight, Calendar } from "lucide-
 import api, { formatApiError } from "../lib/api";
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", preferred_time: "", investment_size: "", notes: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", preferred_time: "", investment_size: "", notes: "", website: "" });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -71,6 +71,7 @@ export default function ContactPage() {
               </div>
             ) : (
               <form onSubmit={submit} data-testid="strategy-call-form" className="mt-6 space-y-3">
+                <input type="text" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex="-1" autoComplete="off" aria-hidden="true" style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }} />
                 <div className="grid md:grid-cols-2 gap-3">
                   <input data-testid="strategy-input-name" placeholder="Full name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />
                   <input data-testid="strategy-input-email" type="email" placeholder="Work email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />

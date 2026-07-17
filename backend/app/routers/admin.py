@@ -20,6 +20,32 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXT = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 
 
+def _valid_image_bytes(ext: str, data: bytes) -> bool:
+    """Magic-byte validation: file content must match its claimed extension."""
+    if len(data) < 12:
+        return False
+    if ext == ".png":
+        return data[:8] == b"\x89PNG\r\n\x1a\n"
+    if ext in (".jpg", ".jpeg"):
+        return data[:3] == b"\xff\xd8\xff"
+    if ext == ".gif":
+        return data[:4] in (b"GIF8",)
+    if ext == ".webp":
+        return data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+    return False
+
+
+async def _audit(admin: dict, action: str, target: str, detail: str = ""):
+    await db.audit_log.insert_one({
+        "id": str(uuid.uuid4()),
+        "admin_email": admin.get("email", "unknown"),
+        "action": action,
+        "target": target,
+        "detail": detail[:300],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
+
+
 def _serialize(doc):
     if not doc:
         return None
@@ -72,7 +98,7 @@ async def list_users(_=Depends(require_admin), limit: int = Query(200, ge=1, le=
 
 
 @router.delete("/leads/{collection}/{lead_id}")
-async def delete_lead(collection: str, lead_id: str, _=Depends(require_admin)):
+async def delete_lead(collection: str, lead_id: str, admin=Depends(require_admin)):
     coll_map = {"waitlist": db.leads_waitlist, "partners": db.leads_partners, "strategy-calls": db.leads_strategy_calls}
     coll = coll_map.get(collection)
     if coll is None:
@@ -84,6 +110,7 @@ async def delete_lead(collection: str, lead_id: str, _=Depends(require_admin)):
         res = await coll.delete_one({"id": lead_id})
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Lead not found")
+    await _audit(admin, "delete_lead", f"{collection}/{lead_id}")
     return {"ok": True}
 
 
@@ -122,7 +149,7 @@ async def list_admin_opps(_=Depends(require_admin)):
 
 
 @router.post("/opportunities")
-async def create_opp(body: OpportunityIn, _=Depends(require_admin)):
+async def create_opp(body: OpportunityIn, admin=Depends(require_admin)):
     doc = body.model_dump()
     if not doc.get("id"):
         slug = (doc["name"] or "opp").lower().replace(" ", "-")[:40]
@@ -134,11 +161,12 @@ async def create_opp(body: OpportunityIn, _=Depends(require_admin)):
     doc["updated_at"] = datetime.now(timezone.utc).isoformat()
     await db.opportunities.insert_one(doc)
     doc.pop("_id", None)
+    await _audit(admin, "create_opportunity", doc["id"], doc.get("name", ""))
     return doc
 
 
 @router.put("/opportunities/{opp_id}")
-async def update_opp(opp_id: str, body: OpportunityIn, _=Depends(require_admin)):
+async def update_opp(opp_id: str, body: OpportunityIn, admin=Depends(require_admin)):
     doc = body.model_dump(exclude_unset=True)
     doc.pop("id", None)
     doc["updated_at"] = datetime.now(timezone.utc).isoformat()
@@ -147,20 +175,23 @@ async def update_opp(opp_id: str, body: OpportunityIn, _=Depends(require_admin))
         raise HTTPException(status_code=404, detail="Opportunity not found")
     out = await db.opportunities.find_one({"id": opp_id})
     out.pop("_id", None)
+    await _audit(admin, "update_opportunity", opp_id, out.get("name", ""))
     return out
 
 
 @router.delete("/opportunities/{opp_id}")
-async def delete_opp(opp_id: str, _=Depends(require_admin)):
+async def delete_opp(opp_id: str, admin=Depends(require_admin)):
     res = await db.opportunities.delete_one({"id": opp_id})
     if res.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Opportunity not found")
+    await _audit(admin, "delete_opportunity", opp_id)
     return {"ok": True}
 
 
 @router.post("/opportunities/reset")
-async def reset_opps(_=Depends(require_admin)):
+async def reset_opps(admin=Depends(require_admin)):
     await reset_opportunities_to_defaults()
+    await _audit(admin, "reset_opportunities", "all")
     return {"ok": True, "count": await db.opportunities.count_documents({})}
 
 
@@ -178,21 +209,32 @@ async def get_content_admin(key: str, _=Depends(require_admin)):
 
 
 @router.put("/content/{key}")
-async def put_content_admin(key: str, body: ContentIn, _=Depends(require_admin)):
+async def put_content_admin(key: str, body: ContentIn, admin=Depends(require_admin)):
     await upsert_content(key, body.value)
+    await _audit(admin, "update_content", key)
     return {"ok": True, "key": key}
+
+
+# ---------------- Audit log ----------------
+@router.get("/audit-log")
+async def get_audit_log(_=Depends(require_admin), limit: int = Query(200, ge=1, le=500)):
+    cursor = db.audit_log.find({}).sort("created_at", -1).limit(limit)
+    return {"items": [_serialize(d) async for d in cursor]}
 
 
 # ---------------- Image upload ----------------
 @router.post("/upload")
-async def upload_image(file: UploadFile = File(...), _=Depends(require_admin)):
+async def upload_image(file: UploadFile = File(...), admin=Depends(require_admin)):
     ext = Path(file.filename or "").suffix.lower()
     if ext not in ALLOWED_EXT:
         raise HTTPException(status_code=400, detail=f"Unsupported extension. Allowed: {sorted(ALLOWED_EXT)}")
     data = await file.read()
     if len(data) > 6 * 1024 * 1024:
         raise HTTPException(status_code=413, detail="File too large (max 6 MB)")
+    if not _valid_image_bytes(ext, data):
+        raise HTTPException(status_code=400, detail="File content does not match a valid image format")
     name = f"{uuid.uuid4().hex}{ext}"
     out_path = UPLOAD_DIR / name
     out_path.write_bytes(data)
+    await _audit(admin, "upload_image", name, f"{len(data)} bytes")
     return {"url": f"/uploads/{name}", "size": len(data)}

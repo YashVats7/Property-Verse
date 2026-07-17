@@ -1,5 +1,7 @@
 """Authentication helpers: password hashing, JWT, cookies, current-user dep."""
 import os
+import re
+import uuid
 from datetime import datetime, timezone, timedelta
 
 import bcrypt
@@ -10,6 +12,13 @@ from fastapi import HTTPException, Request, Response
 from .db import db
 
 JWT_ALGORITHM = "HS256"
+
+
+def validate_password_strength(password: str):
+    if len(password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long")
+    if not re.search(r"[A-Za-z]", password) or not re.search(r"\d", password):
+        raise HTTPException(status_code=400, detail="Password must contain at least one letter and one number")
 
 
 def _jwt_secret() -> str:
@@ -37,13 +46,28 @@ def create_access_token(user_id: str, email: str) -> str:
     return pyjwt.encode(payload, _jwt_secret(), algorithm=JWT_ALGORITHM)
 
 
-def create_refresh_token(user_id: str) -> str:
-    payload = {
-        "sub": user_id,
-        "exp": datetime.now(timezone.utc) + timedelta(days=7),
-        "type": "refresh",
-    }
+async def issue_refresh_token(user_id: str) -> str:
+    """Create a refresh token with a server-tracked jti (revocable, rotatable)."""
+    jti = uuid.uuid4().hex
+    expires = datetime.now(timezone.utc) + timedelta(days=7)
+    payload = {"sub": user_id, "exp": expires, "type": "refresh", "jti": jti}
+    await db.refresh_tokens.insert_one({
+        "jti": jti,
+        "user_id": user_id,
+        "expires_at": expires,
+        "revoked": False,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    })
     return pyjwt.encode(payload, _jwt_secret(), algorithm=JWT_ALGORITHM)
+
+
+async def revoke_refresh_token(jti: str):
+    await db.refresh_tokens.update_one({"jti": jti}, {"$set": {"revoked": True}})
+
+
+async def is_refresh_token_valid(jti: str) -> bool:
+    doc = await db.refresh_tokens.find_one({"jti": jti})
+    return bool(doc) and not doc.get("revoked", False)
 
 
 def set_auth_cookies(response: Response, access: str, refresh: str):

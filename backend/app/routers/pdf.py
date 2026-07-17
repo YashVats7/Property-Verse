@@ -6,9 +6,9 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.colors import HexColor
@@ -16,6 +16,7 @@ from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
 
 from ..db import db
+from ..ratelimit import limiter
 
 router = APIRouter(tags=["pdf"])
 
@@ -26,9 +27,10 @@ PV_SLATE = HexColor("#64748B")
 
 
 class PdfRequest(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
     email: EmailStr
-    phone: Optional[str] = None
+    phone: Optional[str] = Field(default=None, max_length=20)
+    website: Optional[str] = None  # honeypot
 
 
 def _inr(n: int) -> str:
@@ -124,7 +126,10 @@ def _draw_summary(c: canvas.Canvas, o: dict, lead: dict):
 
 
 @router.post("/opportunities/{opp_id}/pdf")
-async def generate_pdf(opp_id: str, body: PdfRequest):
+@limiter.limit("5/minute")
+async def generate_pdf(opp_id: str, body: PdfRequest, request: Request):
+    if body.website:
+        raise HTTPException(status_code=400, detail="Invalid submission")
     opp = await db.opportunities.find_one({"id": opp_id})
     if not opp:
         raise HTTPException(status_code=404, detail="Opportunity not found")

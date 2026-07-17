@@ -7,7 +7,7 @@ const ECOSYSTEM = ["hBits", "Strata", "PropShare", "Assetmonk", "Bhive Alts", "R
 
 function PartnerForm({ kind = "partner", testIdPrefix }) {
   const [form, setForm] = useState({
-    name: "", email: "", company: "", role: "", partnership_type: kind === "lender" ? "bank_nbfc" : "builder", message: "",
+    name: "", email: "", company: "", role: "", partnership_type: kind === "lender" ? "bank_nbfc" : "builder", message: "", website: "",
   });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -38,6 +38,7 @@ function PartnerForm({ kind = "partner", testIdPrefix }) {
 
   return (
     <form onSubmit={submit} data-testid={`${testIdPrefix}-form`} className="space-y-3">
+      <input type="text" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex="-1" autoComplete="off" aria-hidden="true" style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }} />
       <div className="grid md:grid-cols-2 gap-3">
         <input data-testid={`${testIdPrefix}-input-name`} placeholder="Your name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />
         <input data-testid={`${testIdPrefix}-input-email`} type="email" placeholder="Work email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none focus:ring-2 focus:ring-[#0A2540]/10" />

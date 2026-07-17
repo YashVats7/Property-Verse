@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import api, { formatApiError } from "../lib/api";
 
 export default function WaitlistForm({ source = "investor_waitlist", title = "Join the Investor Waitlist", subtitle, ctaLabel = "Join Waitlist", testIdPrefix = "waitlist" }) {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", investment_range: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", investment_range: "", website: "" });
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -40,6 +40,7 @@ export default function WaitlistForm({ source = "investor_waitlist", title = "Jo
     <form data-testid={`${testIdPrefix}-form`} onSubmit={submit} className="space-y-4">
       {title && <div className="font-['Cabinet_Grotesk'] text-2xl font-bold text-[#0A2540]">{title}</div>}
       {subtitle && <p className="text-slate-600 text-sm">{subtitle}</p>}
+      <input type="text" name="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex="-1" autoComplete="off" aria-hidden="true" style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <input
           data-testid={`${testIdPrefix}-input-name`}

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Users, Briefcase, Phone, ShieldCheck, Trash2, Mail, Download, Search, Building2, Plus, Edit3, RefreshCw, Save, Upload, X } from "lucide-react";
+import { Users, Briefcase, Phone, ShieldCheck, Trash2, Mail, Download, Search, Building2, Plus, Edit3, RefreshCw, Save, Upload, X, History } from "lucide-react";
 import api from "../lib/api";
 import { useAuth } from "../lib/auth";
 
@@ -11,6 +11,7 @@ const LEAD_TABS = [
   { k: "partners", l: "Partners", i: Briefcase, ep: "/admin/leads/partners" },
   { k: "strategy-calls", l: "Strategy Calls", i: Phone, ep: "/admin/leads/strategy-calls" },
   { k: "users", l: "Users", i: ShieldCheck, ep: "/admin/users" },
+  { k: "audit", l: "Audit Log", i: History, ep: "/admin/audit-log" },
 ];
 const CONTENT_TABS = [
   { k: "opportunities", l: "Opportunities", i: Building2 },
@@ -90,7 +91,7 @@ export default function AdminPage() {
           {tab === "hero" && <ContentJsonEditor key="hero" contentKey="hero" label="Hero Copy" />}
           {tab === "about" && <ContentJsonEditor key="about" contentKey="about" label="About Section" />}
           {tab === "personas" && <ContentJsonEditor key="personas" contentKey="personas" label="Personas" />}
-          {["waitlist", "partners", "strategy-calls", "users"].includes(tab) && <LeadsTable tab={tab} />}
+          {["waitlist", "partners", "strategy-calls", "users", "audit"].includes(tab) && <LeadsTable tab={tab} />}
         </div>
       </section>
     </div>
@@ -155,7 +156,7 @@ function LeadsTable({ tab }) {
                      </td>
                    ))}
                    <td className="px-5 py-3">
-                     {tab !== "users" && (
+                     {tab !== "users" && tab !== "audit" && (
                        <button onClick={() => remove(it.id || it.id_mongo)} className="text-rose-500 hover:text-rose-700"><Trash2 className="w-4 h-4" /></button>
                      )}
                    </td>
