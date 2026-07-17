@@ -179,3 +179,23 @@ User feedback: v4 floaters (random tickers, matrix digits, particle dots) felt l
 - Auto-picks city from `o.location` string
 - Animated: buildings rise from ground with staggered entrance + windows pulse green randomly + rent dots travel along the base
 - `OpportunityCard` now tracks hover state and shows the skyline overlay (navy backdrop + city pill label) over the asset photo on hover with AnimatePresence fade
+
+---
+
+## Security Hardening Pass (June 2026 — fork session)
+User requested full security hardening before onboarding 8k clients. All 7 items implemented + tested (iteration_5.json, 15/16 backend, 100% frontend):
+1. **Rate limiting** (slowapi, per-IP via X-Forwarded-For): register 5/min, login 10/min, refresh 30/min, lead forms 10/min, PDF 5/min — `app/ratelimit.py`
+2. **Security headers middleware** (HSTS, X-Frame-Options DENY, nosniff, CSP, Referrer-Policy, Permissions-Policy) + API docs/openapi disabled — `server.py`
+3. **Password policy**: min 8 chars, letter + number required on register
+4. **Upload magic-byte validation** (PNG/JPEG/GIF/WEBP content sniffing) — `admin.py _valid_image_bytes`
+5. **Honeypot anti-bot** hidden `website` field on all 3 lead forms + PDF gate; Pydantic max_length limits on all lead inputs
+6. **Refresh token rotation + server-side revocation** (`refresh_tokens` collection with TTL index; logout revokes; replayed old token → 401)
+7. **Admin audit log** (`audit_log` collection, all admin mutations recorded; new read-only "Audit Log" tab in AdminPage)
+Also: Mongo indexes on startup (users.email unique, refresh_tokens TTL, etc.). Note: testing agent fixed a corrupted WaitlistForm.jsx during this session (verified clean).
+
+## Remaining Backlog
+- P1: Email notifications via Resend/SendGrid on lead capture (needs user API key)
+- P2: "Book a Strategy Call" conversion flow post-PDF download
+- P2 (minor): StatsEditor copy says "5 KPI numbers" but renders 6 fields
+- Note for prod: network-level DDoS/WAF (e.g., Cloudflare) is infra-level, outside app code
+

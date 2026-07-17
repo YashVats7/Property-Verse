@@ -121,11 +121,11 @@ async def refresh_token(request: Request, response: Response):
         user = await db.users.find_one({"_id": ObjectId(payload["sub"])})
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
-        # Rotation: revoke old token, issue a fresh pair
-        if jti:
-            await revoke_refresh_token(jti)
+        # Rotation: issue fresh pair first, then revoke old token
         uid = str(user["_id"])
         set_auth_cookies(response, create_access_token(uid, user["email"]), await issue_refresh_token(uid))
+        if jti:
+            await revoke_refresh_token(jti)
         return {"ok": True}
     except pyjwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid refresh token")
