@@ -1,0 +1,47 @@
+{
+  "summary": "Iteration 8: production-domain CORS fix + fonts self-hosting + admin content editors + dashboard KPI fix verification. New CORS suite (7 tests) 100% pass; full backend suite 73/76 pass (3 known register-rate-limit artifacts from iteration_7). Frontend: admin login OK, all 3 new form-field editors (Hero/About/Personas) render with individual data-testid fields (NO raw JSON textareas anywhere), Hero/About/Personas save buttons wired; self-hosted fonts (Clash Display + Satoshi) load via document.fonts.check; waitlist/LFA/partner forms all submit and show success cards. CRITICAL FINDING: dashboard mockup KPI boxes STILL overlap — bug #7 is NOT fixed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/auth/register (test_security_v7 register-heavy tests)", "issue": "Same 3 tests as iteration_7 hit register 5/min rate-limit when full suite runs sequentially (test_register_strong_password_ok, test_refresh_rotation_revokes_old_token, test_logout_revokes_refresh_token). Pass in isolation after ~65s cooldown. Not a regression."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "DashboardMockup (HomePage 'Your portfolio, live.')", "issue": "KPI values still overflow their 67.5px cards. Cells have overflow:visible + whitespace-nowrap, so '₹84,200' (scrollWidth 90 vs clientWidth 66) and '16.8%' (75 vs 66) escape their cells and VISUALLY OVERLAP adjacent cards — screenshot at 1280 shows literal string '₹84,20016.8%'. Also all 4 labels truncate to 'TOTA…/ASSE…/RENT…/PROJ…'. Confirmed at BOTH 1920px and 1280px viewports (grid renders 4 equal 67.5px columns because grid xl:grid-cols-4 kicks in at ≥1280).", "selector": "div.grid.grid-cols-2.xl:grid-cols-4 in /app/frontend/src/components/Animated.jsx around line 544-553", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Homepage DashboardMockup section", "issues": ["KPI card width (~67.5px) is far too small for ₹84,200 at text-lg (20px font). whitespace-nowrap alone doesn't help when parent grid has fixed narrow columns — either the mockup container needs more width, or the KPI grid needs to switch to 2-cols on smaller widths (bump xl to 2xl?), or values need shorter formatting (₹84.2K), or add overflow:hidden + text truncation."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_cors_v8.py",
+    "/app/backend/tests/backend_test.py",
+    "/app/backend/tests/test_admin_v6.py",
+    "/app/backend/tests/test_security_v7.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "FIX Dashboard mockup KPI overlap: the current grid-cols-2 xl:grid-cols-4 + whitespace-nowrap + text-lg xl:text-xl fix is INSUFFICIENT. Options: (a) shorten values to ₹84.2K & keep 4-col; (b) keep 4 KPIs but expand mockup panel width / reduce siblings; (c) use grid-cols-2 always with wider cards; (d) reduce font to text-sm on that particular value or add tabular-nums with truncation.",
+    "Optionally address the recurring register-rate-limit artifact in security_v7 by isolating those 3 tests to run last with a sleep or bumping the register rate limit for tests."
+  ],
+  "critical_code_review_comments": [
+    "CORS regex `https://([a-z0-9-]+\\.)*(propertyverse\\.co\\.in|emergent\\.host|emergentagent\\.com)` correctly matches propertyverse.co.in apex + www + arbitrary sub-subdomains and the emergent preview/prod hosts. Disallowed origins verified: no ACAO returned for evil.example.com / attacker.local.",
+    "Admin tab key in code is `strategy-calls` (not `strategy`) — task spec used shortened name; testid is `admin-tab-strategy-calls`. Not a bug, just doc mismatch.",
+    "Marketplace testids use prefix `opps-list-` (route `/opportunities`); the app has no `/marketplace` route (nav link 'Marketplace' goes to `/opportunities`)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_cors_v8.py (new)"
+  ],
+  "success_rate": {
+    "backend": "100% for new CORS suite (7/7). Full suite: 73/76 (3 known rate-limit artifacts).",
+    "frontend": "~90% — admin login/tabs/hero/about/personas editors PASS; fonts PASS; waitlist/LFA/partner forms PASS; investor login PASS. FAIL: dashboard mockup KPI overlap (bug #7 not fully fixed)."
+  },
+  "test_credentials": "admin@propertyverse.in / PropVerseAdmin2025! ; investor@propertyverse.in / Investor2025! (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "none (test submissions used random emails; a few waitlist/LFA/partner rows were created via legit form flow)",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "CORS preflight test file is at /app/backend/tests/test_cors_v8.py — runs against http://localhost:8001 to bypass ingress '*' injection. Preview ingress DOES inject `access-control-allow-origin: *` on the public URL for GETs (verified via curl) so ALL production-CORS assertions MUST be done against localhost:8001. Correct data-testids: login-input-email/password, login-submit-btn; home-waitlist-input-name/email/phone, home-waitlist-select-range, home-waitlist-submit-btn, home-waitlist-success; lfa-waitlist-input-*, lfa-waitlist-submit-btn, lfa-waitlist-success; partner-input-name/email/company/role, partner-select-type, partner-input-message, partner-submit-btn, partner-success. Admin tab keys: hero, about, personas, opportunities, stats, waitlist, partners, strategy-calls, users, audit. Hero editor testids: hero-eyebrow-input, hero-title-input, hero-subtitle-input, hero-kpi-{i}-a/b, hero-save-btn. About: about-mission-title-input, about-mission-body-input, about-founder-name/role/bio-input, about-stat-{i}-a/b, about-save-btn. Personas: persona-{i}-a/b, persona-add, personas-save-btn. All 3 new editors verified NOT to contain raw JSON textareas (textarea.font-mono count == 0). Admin login redirects to /dashboard by default; must goto /admin explicitly.",
+  "rca of the issue": "Dashboard mockup KPI overlap: The container div in /app/frontend/src/components/Animated.jsx line ~544 uses `grid grid-cols-2 xl:grid-cols-4 gap-3` inside a fixed-width mockup panel (~340px wide scaled). At xl (≥1280) the 4-column split gives each card only ~66px clientWidth. Values `₹84,200` (needs ~90px at 20px font) and `16.8%` (needs ~75px) with `whitespace-nowrap` don't wrap — and because the card divs default to `overflow: visible`, the text bleeds rightward into the next card's space. Fix options: (1) format value as `₹84.2K` (shortest); (2) use `overflow-hidden` + `truncate` to at least clip; (3) drop xl:grid-cols-4 back to grid-cols-2 permanently; (4) reduce font on values to text-sm sm:text-base xl:text-lg."
+}

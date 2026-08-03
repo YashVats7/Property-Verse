@@ -88,9 +88,9 @@ export default function AdminPage() {
         <div className="mt-6">
           {tab === "opportunities" && <OpportunityManager />}
           {tab === "stats" && <StatsEditor />}
-          {tab === "hero" && <ContentJsonEditor key="hero" contentKey="hero" label="Hero Copy" />}
-          {tab === "about" && <ContentJsonEditor key="about" contentKey="about" label="About Section" />}
-          {tab === "personas" && <ContentJsonEditor key="personas" contentKey="personas" label="Personas" />}
+          {tab === "hero" && <HeroEditor />}
+          {tab === "about" && <AboutEditor />}
+          {tab === "personas" && <PersonasEditor />}
           {["waitlist", "partners", "strategy-calls", "users", "audit"].includes(tab) && <LeadsTable tab={tab} />}
         </div>
       </section>
@@ -214,39 +214,109 @@ function StatsEditor() {
   );
 }
 
-// ---------------- Content JSON Editor ----------------
-function ContentJsonEditor({ contentKey, label }) {
-  const [text, setText] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  useEffect(() => {
-    setLoading(true);
-    api.get(`/content/${contentKey}`).then((r) => setText(JSON.stringify(r.data, null, 2))).catch(() => setText("{}")).finally(() => setLoading(false));
-  }, [contentKey]);
+// ---------------- Friendly content editors ----------------
+function Field({ label, value, onChange, textarea, testId }) {
+  const cls = "mt-1.5 w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none text-sm";
+  return (
+    <div>
+      <label className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">{label}</label>
+      {textarea
+        ? <textarea data-testid={testId} value={value} onChange={(e) => onChange(e.target.value)} rows={4} className={cls} />
+        : <input data-testid={testId} value={value} onChange={(e) => onChange(e.target.value)} className={cls} />}
+    </div>
+  );
+}
 
+function PairList({ label, items, onChange, aKey = "value", bKey = "label", aPh = "Value", bPh = "Label", testIdPrefix }) {
+  const upd = (i, k, v) => onChange(items.map((it, idx) => (idx === i ? { ...it, [k]: v } : it)));
+  return (
+    <div>
+      <label className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">{label}</label>
+      <div className="mt-1.5 space-y-2">
+        {items.map((it, i) => (
+          <div key={i} className="flex gap-2 items-center">
+            <input data-testid={`${testIdPrefix}-${i}-a`} placeholder={aPh} value={it[aKey] || ""} onChange={(e) => upd(i, aKey, e.target.value)} className="w-40 px-3 py-2.5 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none text-sm" />
+            <input data-testid={`${testIdPrefix}-${i}-b`} placeholder={bPh} value={it[bKey] || ""} onChange={(e) => upd(i, bKey, e.target.value)} className="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none text-sm" />
+            <button onClick={() => onChange(items.filter((_, idx) => idx !== i))} data-testid={`${testIdPrefix}-${i}-remove`} className="text-rose-500 hover:text-rose-700 flex-shrink-0"><Trash2 className="w-4 h-4" /></button>
+          </div>
+        ))}
+        <button onClick={() => onChange([...items, { [aKey]: "", [bKey]: "" }])} data-testid={`${testIdPrefix}-add`} className="text-sm font-semibold text-[#1E63D5] inline-flex items-center gap-1"><Plus className="w-4 h-4" /> Add row</button>
+      </div>
+    </div>
+  );
+}
+
+function SaveBar({ onSave, saving, label, testId }) {
+  return (
+    <button onClick={onSave} disabled={saving} data-testid={testId} className="mt-2 px-6 py-3 rounded-full bg-[#3FB36F] text-white font-semibold inline-flex items-center gap-2 disabled:opacity-60">
+      <Save className="w-4 h-4" /> {saving ? "Saving…" : label}
+    </button>
+  );
+}
+
+function useContentEditor(key, label) {
+  const [data, setData] = useState(null);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => { api.get(`/content/${key}`).then((r) => setData(r.data)).catch(() => setData(null)); }, [key]);
   const save = async () => {
-    let parsed;
-    try { parsed = JSON.parse(text); } catch { toast.error("Invalid JSON"); return; }
     setSaving(true);
-    try { await api.put(`/admin/content/${contentKey}`, { value: parsed }); toast.success(`${label} saved`); }
+    try { await api.put(`/admin/content/${key}`, { value: data }); toast.success(`${label} saved — changes are live`); }
     catch { toast.error("Save failed"); } finally { setSaving(false); }
   };
+  return { data, setData, saving, save };
+}
 
-  if (loading) return <div className="p-10 text-center text-slate-500">Loading…</div>;
+function HeroEditor() {
+  const { data, setData, saving, save } = useContentEditor("hero", "Hero copy");
+  if (!data) return <div className="p-10 text-center text-slate-500">Loading…</div>;
   return (
-    <div className="pv-card p-7">
-      <div className="font-['Cabinet_Grotesk'] text-xl font-bold text-[#0A2540]">{label}</div>
-      <p className="text-sm text-slate-600 mt-1">Edit the JSON below. Fields are loaded live from the database.</p>
-      <textarea
-        data-testid={`content-${contentKey}-editor`}
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        className="mt-4 w-full h-[480px] px-4 py-3 rounded-xl border border-slate-200 focus:border-[#0A2540] focus:outline-none font-mono text-xs leading-relaxed"
-        spellCheck={false}
-      />
-      <button onClick={save} disabled={saving} data-testid={`content-${contentKey}-save`} className="mt-4 px-6 py-3 rounded-full bg-[#3FB36F] text-white font-semibold inline-flex items-center gap-2 disabled:opacity-60">
-        <Save className="w-4 h-4" /> {saving ? "Saving…" : `Save ${label}`}
-      </button>
+    <div className="pv-card p-7 space-y-5">
+      <div>
+        <div className="font-['Cabinet_Grotesk'] text-xl font-bold text-[#0A2540]">Hero Copy</div>
+        <p className="text-sm text-slate-600 mt-1">Edit the homepage headline. Changes appear on the website after saving.</p>
+      </div>
+      <Field label="Eyebrow (small top line)" value={data.eyebrow || ""} onChange={(v) => setData({ ...data, eyebrow: v })} testId="hero-eyebrow-input" />
+      <Field label="Headline (one line per row)" textarea value={(data.title_lines || []).join("\n")} onChange={(v) => setData({ ...data, title_lines: v.split("\n") })} testId="hero-title-input" />
+      <Field label="Subtitle" textarea value={data.subtitle || ""} onChange={(v) => setData({ ...data, subtitle: v })} testId="hero-subtitle-input" />
+      <PairList label="Hero KPI numbers" items={data.kpis || []} onChange={(kpis) => setData({ ...data, kpis })} aPh="e.g. ₹60Cr+" bPh="e.g. Executed (team)" testIdPrefix="hero-kpi" />
+      <SaveBar onSave={save} saving={saving} label="Save Hero Copy" testId="hero-save-btn" />
+    </div>
+  );
+}
+
+function AboutEditor() {
+  const { data, setData, saving, save } = useContentEditor("about", "About section");
+  if (!data) return <div className="p-10 text-center text-slate-500">Loading…</div>;
+  return (
+    <div className="pv-card p-7 space-y-5">
+      <div>
+        <div className="font-['Cabinet_Grotesk'] text-xl font-bold text-[#0A2540]">About Section</div>
+        <p className="text-sm text-slate-600 mt-1">Edit the About page content. Use **bold** for emphasis in the mission body.</p>
+      </div>
+      <Field label="Mission title" value={data.mission_title || ""} onChange={(v) => setData({ ...data, mission_title: v })} testId="about-mission-title-input" />
+      <Field label="Mission body" textarea value={data.mission_body_md || ""} onChange={(v) => setData({ ...data, mission_body_md: v })} testId="about-mission-body-input" />
+      <div className="grid md:grid-cols-2 gap-4">
+        <Field label="Founder name" value={data.founder_name || ""} onChange={(v) => setData({ ...data, founder_name: v })} testId="about-founder-name-input" />
+        <Field label="Founder role" value={data.founder_role || ""} onChange={(v) => setData({ ...data, founder_role: v })} testId="about-founder-role-input" />
+      </div>
+      <Field label="Founder bio" textarea value={data.founder_bio || ""} onChange={(v) => setData({ ...data, founder_bio: v })} testId="about-founder-bio-input" />
+      <PairList label="Track-record stats" items={data.stats || []} onChange={(stats) => setData({ ...data, stats })} aPh="e.g. ₹60 Cr+" bPh="e.g. Team's executed sales" testIdPrefix="about-stat" />
+      <SaveBar onSave={save} saving={saving} label="Save About" testId="about-save-btn" />
+    </div>
+  );
+}
+
+function PersonasEditor() {
+  const { data, setData, saving, save } = useContentEditor("personas", "Personas");
+  if (!data) return <div className="p-10 text-center text-slate-500">Loading…</div>;
+  return (
+    <div className="pv-card p-7 space-y-5">
+      <div>
+        <div className="font-['Cabinet_Grotesk'] text-xl font-bold text-[#0A2540]">Personas ("Who It's For")</div>
+        <p className="text-sm text-slate-600 mt-1">Each row is one investor persona card on the homepage.</p>
+      </div>
+      <PairList label="Personas" items={data || []} onChange={setData} aKey="title" bKey="desc" aPh="e.g. HNIs" bPh="Short description" testIdPrefix="persona" />
+      <SaveBar onSave={save} saving={saving} label="Save Personas" testId="personas-save-btn" />
     </div>
   );
 }

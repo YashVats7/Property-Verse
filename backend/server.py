@@ -45,10 +45,16 @@ api_router.include_router(pdf_router.router)
 
 app.include_router(api_router)
 
+_cors_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip() and o.strip() != "*"]
+_frontend_url = os.environ.get("FRONTEND_URL")
+if _frontend_url and _frontend_url not in _cors_origins:
+    _cors_origins.append(_frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=[os.environ.get("FRONTEND_URL", "http://localhost:3000")],
+    allow_origins=_cors_origins,
+    allow_origin_regex=r"https://([a-z0-9-]+\.)*(propertyverse\.co\.in|emergent\.host|emergentagent\.com)",
     allow_methods=["*"],
     allow_headers=["*"],
 )
