@@ -206,6 +206,14 @@ Applied review fixes, verified regression-free by testing agent (iteration_6.jso
 - Full type hints added to `app/routers/opportunities.py` and `app/routers/admin.py`
 - Verified zero regressions via testing agent (iteration_7.json, 69/69 effective)
 
+## Production Bug-Fix Pass (Aug 2026) — REDEPLOY REQUIRED
+User reported 8 production issues post custom-domain linking (propertyverse.co.in, Cloudflare-proxied, apex 308→www). Verified by testing agent (iteration_8.json):
+1. **CORS root cause** (broke login + waitlist + partner + LFA forms in prod): backend only allowed single FRONTEND_URL origin. Fixed: CORS_ORIGINS env list (4 origins) + allow_origin_regex for propertyverse.co.in / emergent.host / emergentagent.com subdomains. NOTE: preview ingress injects permissive '*' so CORS must be tested on localhost:8001.
+2. **Fonts broken in prod**: Fontshare CDN (api.fontshare.com) returns HTTP 500 (provider outage). Fixed: fonts SELF-HOSTED at /app/frontend/public/fonts (14 .woff, fonts.css linked in index.html). Tanker font dropped (unused). NOTE: @font-face must live in public/ CSS — CRA css-loader can't resolve /fonts/ absolute urls from src CSS.
+3. **Admin friendly editors**: hero/about/personas raw-JSON textareas replaced with HeroEditor/AboutEditor/PersonasEditor form-field components (Field/PairList/SaveBar) in AdminPage.jsx.
+4. **DashboardMockup KPI overlap**: fixed to permanent grid-cols-2 (4-col gave only ~66px/card); verified widths 121<145px.
+5. MongoDB info given to user: preview = mongodb://localhost:27017, db property_verse; production DB is Emergent-managed (no direct connection string; contact support@emergent.sh for direct access).
+
 ## Remaining Backlog
 - P1: Email notifications via Resend/SendGrid on lead capture (needs user API key)
 - P2: "Book a Strategy Call" conversion flow post-PDF download

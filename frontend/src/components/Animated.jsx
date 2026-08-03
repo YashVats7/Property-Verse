@@ -541,14 +541,14 @@ export function DashboardMockup() {
 
           {/* Main */}
           <div className="p-5 md:p-7">
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               {[
                 { l: "Total Invested", v: "₹10 L", a: "text-[#0A2540]" },
                 { l: "Asset Exposure", v: "₹20 L", a: "text-[#1E63D5]" },
                 { l: "Rental Received", v: "₹84,200", a: "text-[#3FB36F]" },
                 { l: "Projected IRR", v: "16.8%", a: "text-[#3FB36F]" },
               ].map((s) => (
-                <div key={s.l} className="rounded-xl border border-slate-200 p-3 min-w-0">
+                <div key={s.l} className="rounded-xl border border-slate-200 p-3 min-w-0 overflow-hidden">
                   <div className="text-[10px] uppercase tracking-widest text-slate-500 font-semibold truncate">{s.l}</div>
                   <div className={`pv-num text-lg xl:text-xl font-extrabold mt-1 whitespace-nowrap ${s.a}`}>{s.v}</div>
                 </div>
